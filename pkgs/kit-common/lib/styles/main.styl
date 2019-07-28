@@ -1,0 +1,206 @@
+.cafekit
+  line-height 1.4
+  font-size 16px
+  *
+    box-sizing border-box
+  div, section, img
+    vertical-align middle
+  p, h1, h2, h3, h4, h5, h6
+    padding 0
+    margin 0
+  $highlightColor = #bbac94
+  $textColor = #dedede
+  $uiBorderColor = #616161
+  $linkColor = #7fd4ff
+  $successColor = #91e39b
+  $warningColor = #d98298
+  $rarityCommonColor = #f3f3f3
+  $rarityUncommonColor = #c0ffc0
+  $rarityRareColor = #5990ff
+  $rarityEpicColor = #b38cff
+  $rarityAetherialColor = #d789b6
+  $containerPadding = 6px
+  .ck-hl
+    color $highlightColor
+  .ck-success
+    color $successColor
+  .ck-warning
+    color $warningColor
+  .ck-container
+    padding $containerPadding
+  .ck-rarity-1
+    color $rarityCommonColor
+  .ck-rarity-2
+    color $rarityUncommonColor
+  .ck-rarity-3
+    color $rarityRareColor
+  .ck-rarity-4
+    color $rarityEpicColor
+  .ck-rarity-7
+    color $rarityAetherialColor
+  .ck-box
+    background linear-gradient(to bottom, #666 0%, #333 4%)
+    display inline-block
+    border solid 2px $highlightColor
+    box-shadow rgba(0, 0, 0, 0.2) 0px 1px 8px
+    border-radius 5px
+    color $textColor
+    position relative
+    .ck-box-bottom-wrapper
+      position absolute
+      left 0
+      bottom -0.7em
+      width 100%
+      font-size 0.8em
+      text-align center
+    .ck-box-bottom
+      display inline-block
+      background alpha(#000, 0.7)
+      box-shadow 0px 0px 4px 0px #000
+      user-select none
+      padding 0 8px
+      border-radius 6px
+    a
+      color $linkColor
+      text-decoration none
+      &:hover
+        background-color alpha($linkColor, 0.5)
+      &:active
+        background-color alpha($linkColor, 0.3)
+    button
+      min-width 100px
+      line-height 1.6
+      font-size 0.9em
+      border solid 1px transparent
+      border-radius 100px
+      user-select none
+      color $textColor
+      background linear-gradient(to bottom, #5f5f5f, #3b3d3c)
+      box-shadow 0px 0px 2px #000000
+      padding 0
+      cursor pointer
+      &:focus
+        outline none
+      &:hover
+        border solid 1px $highlightColor
+      &:active
+        background linear-gradient(to top, #5f5f5f, #3b3d3c)
+      &:disabled
+        outline none
+        border solid 1px transparent
+  $statPadding = 4px
+  .ck-stat-group
+    display flex
+    padding $containerPadding $containerPadding - $statPadding
+  .ck-stat
+    display inline-block
+    flex 1
+    position relative
+    text-align right
+    margin 0 $statPadding
+    .ck-stat-border
+      width 100%
+      height 6px
+      bottom 0.2em
+      position absolute
+      background $uiBorderColor
+    .ck-stat-name
+      color $highlightColor
+      font-size .8em
+    .ck-stat-value
+      position relative
+      font-size 1.5em
+  .ck-attrs
+    display flex
+    flex-wrap wrap
+    white-space pre-wrap
+    padding 0 $containerPadding
+    .ck-attrs-half
+      width 50%
+    .ck-attrs-half-full
+      width 100%
+    .ck-attrs-half, .ck-attrs-half-full
+      .ck-attrs-name, .ck-attrs-value
+        display inline
+      .ck-attrs-value
+        margin-left 8px
+    .ck-attrs-full
+      width 100%
+      display flex
+      .ck-attrs-name, .ck-attrs-value
+        width 50%
+        flex 1
+    .ck-attrs-header
+      width 100%
+      margin 6px 0
+      border-bottom 1px solid $uiBorderColor
+      margin-left 0 - $containerPadding
+      .ck-attrs-name
+        color lighten($uiBorderColor, 30)
+  .ck-action
+    position relative
+    border-radius 15%
+    display inline-block
+    overflow hidden
+    img
+      width 100%
+      height 100%
+      user-select none
+  .ck-action-cover
+    width 100%
+    height 100%
+    position absolute
+    top 0
+    left 0
+    border-radius 15%
+    pointer-events none
+    background radial-gradient(
+      circle at 50% -460%,
+      rgba(255, 255, 255, .6) 80%,
+      rgba(255,255,255, 0) 85%
+    )
+    box-shadow inset 0px 2px 2px 1px rgba(255, 255, 255, 0.3),
+      inset 0px -1px 2px 1px rgba(255, 255, 255, 0.1)
+  .ck-item-name
+    display inline-flex
+    flex-direction row
+    align-items center
+    &.ck-item-name-size-big
+      height 64px
+      .ck-action
+        height 64px
+        width 64px
+      .ck-item-name-name
+        font-size 1.3em
+      .ck-item-name-meta
+        padding-bottom .3em
+    &.ck-item-name-size-medium
+      height 40px
+      .ck-action
+        height 40px
+        width 40px
+      .ck-item-name-name
+        font-size 1.1em
+      .ck-item-name-type
+        font-size 0.8em
+      .ck-item-name-meta
+        padding-bottom .2em
+    &.ck-item-name-size-small
+      height 26px
+      .ck-action
+        height 24px
+        width 24px
+      .ck-item-name-type
+        display none
+    .ck-item-name-icon
+      margin-right 6px
+  .ck-comment
+    font-size 0.8em
+    color lighten($uiBorderColor, 20)
+    *
+      vertical-align baseline
+    a
+      color lighten($uiBorderColor, 40)
+      &:hover
+        color lighten($uiBorderColor, 60)
+        background $uiBorderColor
