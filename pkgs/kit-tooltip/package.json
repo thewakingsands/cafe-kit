@@ -3,7 +3,8 @@
   "version": "0.1.1",
   "main": "dist/bundle.js",
   "dependencies": {
-    "preact": "^8.4.2"
+    "preact": "^8.4.2",
+    "@thewakingsands/kit-common": "*"
   },
   "scripts": {
     "dev": "webpack-dev-server",
