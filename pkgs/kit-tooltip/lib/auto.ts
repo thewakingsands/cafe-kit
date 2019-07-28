@@ -56,8 +56,12 @@ interface IRenderProps {
 function getMouseOverHandler(options: ITooltipOptions): EventListenerOrEventListenerObject {
   return event => {
     let props: IRenderProps
+
+    if (options.links.itemIdAttribute || options.links.itemNameAttribute) {
+      props = props || handleAttr(event.target as HTMLElement, options)
+    }
     if (options.links.detectWikiLinks) {
-      props = handleWiki(event.target as HTMLElement)
+      props = props || handleWiki(event.target as HTMLElement)
     }
 
     if (props) {
@@ -114,4 +118,27 @@ function handleWiki(el: HTMLElement): IRenderProps {
     props: { name: pageName },
     element: a,
   }
+}
+
+function handleAttr(el: HTMLElement, options: ITooltipOptions): IRenderProps {
+  const itemNameDom = closest(el, `[${options.links.itemNameAttribute}]`)
+  const itemIdDom = closest(el, `[${options.links.itemIdAttribute}]`)
+
+  if (itemIdDom) {
+    return {
+      props: { id: itemIdDom.getAttribute(options.links.itemIdAttribute) },
+      element: itemIdDom,
+    }
+  }
+
+  if (itemNameDom) {
+    const name = itemNameDom.getAttribute(options.links.itemNameAttribute) || itemNameDom.innerText.trim()
+
+    return {
+      props: { name },
+      element: itemNameDom,
+    }
+  }
+
+  return null
 }

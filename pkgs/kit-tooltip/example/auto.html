@@ -7,37 +7,101 @@
   <title>CafeKit 悬浮窗</title>
   <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.15.8/build/styles/default.min.css">
   <style>
+    body {
+      font-family: sans-serif;
+      color: #333;
+    }
     textarea {
       width: 100%;
       height: auto;
     }
     a {
       text-decoration: none;
+      color: #7f89ff;
     }
     a:hover {
       text-decoration: underline;
+    }
+    .example-live {
+      background: rgba(65, 240, 187, 0.1);
+      padding: 16px;
+      border-radius: 8px;
+      position: relative;
+    }
+    .example-live::before {
+      content: 'Live Example';
+      position: absolute;
+      top: -0.5em;
+      left: 0.5em;
+      font-size: 12px;
+      color: #666;
+    }
+    .example-live *:hover {
+      outline: 1px solid #66ccff;
     }
   </style>
 </head>
 <body>
   <h1>CafeKit 悬浮窗</h1>
-  <p>当前支持物品详情的悬浮窗。</p>
+  <p>当前支持显示物品详情的悬浮窗，包括装备、食品和普通道具等。</p>
   <h2>引入代码</h2>
-  <textarea lang="html">
+  <textarea lang="html" no-preview>
+<script src="https://cdn.jsdelivr.net/npm/@thewakingsands/kit-tooltip/dist/bundle.js"></script>
+<!--
+  CDN 地址也可换为 cnpmjs，两个选一个即可
 <script src="https://unpkg.cnpmjs.org/@thewakingsands/kit-tooltip/dist/bundle.js"></script>
+-->
+
+<!-- 初始化悬浮窗 -->
 <script>CafeKitTooltip.initTooltip()</script>
   </textarea>
+  <p>当前支持从多种 CDN 引入；也可以使用 npm 安装，并使用 webpack 等打包工具引用：</p>
+  <textarea lang="bash">
+npm install @thewakingsands/kit-tooltip
+# or
+yarn add @thewakingsands/kit-tooltip
+  </textarea>
+  <textarea lang="javascript">
+import { initTooltip } from '@thewakingsands/kit-tooltip'
+
+initTooltip()
+  </textarea>
+
   <h2>物品悬浮窗</h2>
+
   <h3>自动识别灰机链接</h3>
   <p>当 URL 为灰机的物品 URL 时，自动识别并加上悬浮窗。例如：</p>
-  <p>
-    <a href="https://ff14.huijiwiki.com/wiki/%E7%89%A9%E5%93%81:%E9%85%92%E7%A5%9E%E6%9D%96%C2%B7%E7%A9%B6%E6%9E%81" target="_blank">酒神杖·究极</a>
-    <a href="https://ff14.huijiwiki.com/wiki/Item:酒神杖·镇魂" target="_blank" class="cafekit"><span class="ck-rarity-4">酒神杖·镇魂</span></a>
-  </p>
   <textarea lang="html">
-    <a href="https://ff14.huijiwiki.com/wiki/物品:酒神杖·究极">酒神杖·究极</a>
+<a href="https://ff14.huijiwiki.com/wiki/%E7%89%A9%E5%93%81:%E9%85%92%E7%A5%9E%E6%9D%96%C2%B7%E7%A9%B6%E6%9E%81" target="_blank">酒神杖·究极</a>
+<a href="https://ff14.huijiwiki.com/wiki/Item:酒神杖·镇魂" target="_blank"><span>酒神杖·镇魂</span></a>
   </textarea>
+
+  <h2>手动指定物品</h2>
+
+  <h3>指定物品 ID</h3>
+  <p>当已知物品 ID 时，手动指定物品 ID 可以节约一次 API 搜索查询，悬浮窗数据更快。</p>
+  <textarea lang="html">
+<span data-ck-item-id="22876">酒神杖·究极</span>
+  </textarea>
+
+  <h3>指定物品名</h3>
+  <p>当不知道物品 ID 时，此时只能指定物品名。例如：</p>
+  <textarea lang="html">
+<span data-ck-item-name="猫大胖角笛">摸我试试</span>
+<span data-ck-item-name="番茄炖蛋">想什么呢，用鼠标</span>
+  </textarea>
+  <p>如果文本和物品名字一样的话，那甚至可以不写属性值。例如：</p>
+  <textarea lang="html">
+<span data-ck-item-name>酒神杖·究极</span>
+  </textarea>
+  <p>当然，这种方式不限制元素，任意元素都可以。比如图片：</p>
+  <textarea lang="html">
+<img src="https://huiji-public.huijistatic.com/ff14/uploads/e/e6/Fa00b0bf983e1923d08095ab2ca2003978c95ac6.png" data-ck-item-id="8654">
+  </textarea>
+
   <h2>配置选项</h2>
+  <p>初始化的时候有不少配置选项可以用，请不要错过。</p>
+  <p>由于 CafeMaker 服务器本身使用 CloudFlare 缓存，在部分地区可能面临打不开的情况。请考虑自行增加一层 CDN，并修改初始化选项中的地址。</p>
   <textarea lang="javascript">
 CafeKitTooltip.initTooltip({
   context: {
@@ -74,8 +138,15 @@ CafeKitTooltip.initTooltip({
       codeEl.innerHTML = escapeHtml(block.value.trim())
 
       hljs.highlightBlock(preEl)
-
       block.parentElement.insertBefore(preEl, block)
+
+      if (!block.hasAttribute('no-preview') && lang === 'html') {
+        var liveEl = document.createElement('p')
+        liveEl.className = "example-live"
+        liveEl.innerHTML = block.value.trim()
+        block.parentElement.insertBefore(liveEl, block)
+      }
+
       block.parentElement.removeChild(block)
     })
   </script>

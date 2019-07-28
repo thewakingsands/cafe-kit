@@ -30,7 +30,7 @@ export function popupItem(context: ICKContext, props: ICKItemProps, refEl: HTMLE
 
 export function hidePopup() {
   clearTimeout(hideTimer)
-  hideTimer = setTimeout(() => (popupContainer.style.display = 'none'), 200)
+  hideTimer = setTimeout(() => (popupContainer.style.display = 'none'), 300)
 }
 
 popupContainer.addEventListener('mouseenter', () => clearTimeout(hideTimer))
@@ -44,8 +44,8 @@ function resetPosition() {
   const popRect = popupContainer.getBoundingClientRect()
 
   const pos = {
-    left: refRect.right + 10,
-    top: refRect.bottom + 5,
+    left: refRect.right + 15,
+    top: refRect.bottom + 10,
     bottom: undefined,
   }
 
@@ -58,7 +58,7 @@ function resetPosition() {
 
   if (pos.top + popupHeight > windowHeight) {
     pos.top = undefined
-    pos.bottom = 5
+    pos.bottom = 10
   }
 
   for (const name in pos) {
