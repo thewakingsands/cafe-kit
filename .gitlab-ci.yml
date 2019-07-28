@@ -1,0 +1,4 @@
+include:
+  - project: 'oott123/gitlab-ci-scripts'
+    ref: master
+    file: docker-auto.yml

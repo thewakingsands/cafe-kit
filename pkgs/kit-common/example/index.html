@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <style>
+    .example {
+      display: inline-block;
+      margin: 20px;
+    }
+  </style>
+  <div id="ckbox" class="cafekit example"></div>
+  <div id="ckbox2" class="cafekit example"></div>
+  <script src="../bundle.js"></script>
+  <script>
+    const { CKBox, CKComment, CKBoxBottom, CKContainer, CKStat, CKStatGroup, CKAction, CKActionIcon, CKAttributes, CKItemName, render, h } = CafeKitCommon
+    render(h(CKBox, null, h(
+        'div', {
+          style: {
+            width: '300px',
+            minHeight: '400px',
+            padding: '10px'
+          },
+        }, [
+          h(CKContainer, null, [
+            h(CKItemName, {
+              name: '安忒亚·优雷卡',
+              rarity: 4,
+              type: '单手剑',
+              size: 'medium',
+              iconSrc: 'https://xivapi.com/i/030000/030598.png',
+            }),
+          ]),
+          h(CKStatGroup, null, [
+            h(CKStat, {name: '物理基本性能', value: '109'}),
+            h(CKStat, {name: '物理自动攻击', value: '81.39'}),
+            h(CKStat, {name: '攻击间隔', value: '2.24'}),
+          ]),
+          h(CKAttributes, {attrs: [
+            {name: '品级', value: 405, style: 'full'},
+            {name: '', style: 'header'},
+            {name: '骑士', style: 'full', titleClass: 'ck-success'},
+            {name: '70级以上', style: 'full', titleClass: 'ck-success'},
+            {name: '', style: 'header'},
+            {name: '禁地兵装最终形态', style: 'full', titleClass: ''},
+            {name: '特殊', style: 'header'},
+            {name: '力量', value: '+288', style: 'half'},
+            {name: '耐力', value: '+325', style: 'half'},
+            {name: '制作&修理', style: 'header'},
+            {name: '修理等级', value: '锻铁匠 60级以上', style: 'full'},
+            {name: '修理材料', value: '7级暗物质', style: 'full'},
+            {name: '', style: 'header'},
+            {name: '只能持有一个', style: 'half', titleClass: 'ck-warning'},
+            {name: '不可出售', style: 'half', titleClass: 'ck-warning'},
+          ]}),
+          h(CKContainer, {
+            style: {
+              display: 'flex'
+            },
+          }, [
+            h('button', {style: {flex: 1}}, '复制道具名'),
+            h('span', {style: {width: '10px'}}, ''),
+            h('button', {style: {flex: 1}}, '查看详情'),
+          ]),
+          h(CKComment, null, h('div', null, [
+            '数据由 ',
+            h('a', {href: '#'}, 'CafeMaker'),
+            ' 提供。'
+          ])),
+          h(CKComment, null, h('div', null, [
+            '© 2010 - 2019 SQUARE ENIX CO., LTD. All Rights Reserved.'
+          ])),
+          h(CKBoxBottom, null, 'Shift 显示高品质详细信息')
+        ]
+      )
+    ), document.getElementById('ckbox'))
+
+    render(h(CKBox, null, h(
+        'div', {
+          style: {
+            width: '300px',
+            minHeight: '400px',
+            padding: '10px'
+          },
+        }, [
+          h('div', null, 'Hello, world'),
+          h(CKItemName, {
+            name: '安忒亚·优雷卡',
+            rarity: 4,
+            type: '单手剑',
+            size: 'big',
+            iconSrc: 'https://huiji-public.huijistatic.com/ff14/uploads/8/88/60a961e1a8d98ba4660f20b4b039f3bfcec410de.png',
+          }),
+          h(CKItemName, {
+            name: '安忒亚·优雷卡',
+            rarity: 4,
+            type: '单手剑',
+            size: 'medium',
+            iconSrc: 'https://xivapi.com/i/030000/030598.png',
+          }),
+          h(CKItemName, {
+            name: '安忒亚·优雷卡',
+            rarity: 4,
+            type: '单手剑',
+            size: 'small',
+            iconSrc: 'https://xivapi.com/i/030000/030598.png',
+          }),
+          h(CKContainer, null, [
+            h(CKActionIcon, {
+              src: 'https://huiji-public.huijistatic.com/ff14/uploads/8/88/60a961e1a8d98ba4660f20b4b039f3bfcec410de.png',
+              size: 32
+            }),
+            h(CKActionIcon, {
+              src: 'https://huiji-public.huijistatic.com/ff14/uploads/8/88/60a961e1a8d98ba4660f20b4b039f3bfcec410de.png',
+              size: 64
+            }),
+            h(CKActionIcon, {
+              src: 'https://huiji-public.huijistatic.com/ff14/uploads/8/88/60a961e1a8d98ba4660f20b4b039f3bfcec410de.png',
+              size: 128
+            }),
+            h(CKActionIcon, {
+              src: 'https://huiji-public.huijistatic.com/ff14/uploads/8/88/60a961e1a8d98ba4660f20b4b039f3bfcec410de.png',
+              size: 256
+            })
+          ]),
+          h('div', null, [
+            h('a', { href: '#' }, 'Link'),
+            h('button', null, 'Button'),
+          ]),
+          h('p', null, 'Paragraph'),
+          h('h1', null, 'Heading 1'),
+          h('h2', null, 'Heading 2'),
+          h('h3', null, 'Heading 3'),
+          h('h4', null, 'Heading 4'),
+          h('h5', null, 'Heading 5'),
+          h('h6', null, 'Heading 6'),
+        ]
+      )
+    ), document.getElementById('ckbox2'))
+  </script>
+</body>
+</html>

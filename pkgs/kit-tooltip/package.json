@@ -1,0 +1,33 @@
+{
+  "name": "@thewakingsands/kit-tootip",
+  "version": "0.1.0",
+  "main": "dist/bundle.js",
+  "dependencies": {
+    "preact": "^8.4.2"
+  },
+  "scripts": {
+    "dev": "webpack-dev-server",
+    "build": "webpack",
+    "preversion": "webpack"
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "AGPL-3.0",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/prop-types": "^15.7.1",
+    "copy-webpack-plugin": "^5.0.4"
+  }
+}

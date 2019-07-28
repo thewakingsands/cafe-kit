@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <h2>物品悬浮窗</h2>
+  <div>
+    <p>手动加载演示</p>
+    <div class="cafekit" id="container1" style="display: flex; flex-direction: row; flex-wrap: wrap;"></div>
+  </div>
+  <script src="../bundle.js"></script>
+  <script>
+      const { CKContextProvider, CKItem, render, h } = CafeKitTooltip
+
+      const names = ['罗刹大盾', '罗刹学士手甲', '番茄炖蛋', '伽黎亚玩偶', '削脊拳', '安忒亚·优雷卡', '万辞全书·究极', '404']
+
+      for (const name of names) {
+        const el = document.createElement('div')
+        el.style.margin = '5px'
+
+        render(
+          h(CKContextProvider, {
+            apiBaseUrl: 'https://cafemaker.wakingsands.com',
+            iconBaseUrl: 'https://xivapi.com',
+            defaultHq: true,
+            hideSeCopyright: false,
+          }, [
+            h(CKItem, {name}),
+          ]),
+          el
+        )
+
+        document.getElementById('container1').appendChild(el)
+      }
+  </script>
+</body>
+</html>
