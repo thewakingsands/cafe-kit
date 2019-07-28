@@ -1,6 +1,6 @@
 {
-  "name": "@thewakingsands/cafekit",
-  "version": "0.0.0",
+  "name": "@thewakingsands/cafe-kit",
+  "version": "0.1.0",
   "main": "index.js",
   "license": "UNLICENSED",
   "private": true,
