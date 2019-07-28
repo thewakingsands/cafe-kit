@@ -1,5 +1,5 @@
 {
-  "name": "@thewakingsands/kit-tootip",
+  "name": "@thewakingsands/kit-tooltip",
   "version": "0.1.4",
   "main": "dist/bundle.js",
   "dependencies": {
