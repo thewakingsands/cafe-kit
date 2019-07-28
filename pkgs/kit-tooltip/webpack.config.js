@@ -21,9 +21,6 @@ module.exports = {
   plugins: [
     ...parent.plugins,
     new CopyPlugin([{ from: 'example', to: 'example' }]),
-    new DeclarationBundlerPlugin({
-      moduleName: '"@thewakingsands/kit-tooltip"',
-      out: 'bundle.d.ts',
-    }),
+    new CopyPlugin([{ from: 'bundle.d.ts', to: 'bundle.d.ts' }]),
   ],
 }
