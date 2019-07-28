@@ -1,9 +1,9 @@
 {
   "name": "@thewakingsands/kit-tootip",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "dist/bundle.js",
   "dependencies": {
-    "@thewakingsands/kit-common": "^0.1.3",
+    "@thewakingsands/kit-common": "^0.1.4",
     "preact": "^8.4.2"
   },
   "scripts": {
