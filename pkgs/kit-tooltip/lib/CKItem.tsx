@@ -18,6 +18,7 @@ export interface ICKItemProps {
   name?: string
   id?: number | string
   hq?: boolean
+  onUpdate?: () => void
 }
 
 interface ICKItemState {
@@ -34,8 +35,13 @@ export class CKItem extends Component<ICKItemProps, ICKItemState> {
     await this.getItemData()
   }
 
-  public async componentWillUpdate(prevProps: ICKItemProps) {
+  public async componentDidUpdate(prevProps: ICKItemProps) {
+    if (this.props.onUpdate) {
+      this.props.onUpdate()
+    }
+
     if (prevProps.id !== this.props.id || prevProps.name !== this.props.name) {
+      this.setState({ item: null, error: null })
       try {
         await this.getItemData()
       } catch (e) {
@@ -138,7 +144,7 @@ export class CKItem extends Component<ICKItemProps, ICKItemState> {
     const children: any[] = []
     const ac: ICKAttributesProps = { attrs: [] }
 
-    const iconUrl = `${this.context.iconBaseUrl}${Icon}`
+    const iconUrl = `${this.context.iconBaseUrl}${Icon.replace(/^\/i/, '')}`
     const iconUrlHq = iconUrl.replace(/(\d+\.png)/, 'hq/$1')
 
     const hqName = (

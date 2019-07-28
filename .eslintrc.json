@@ -64,7 +64,6 @@
     "react/jsx-wrap-multilines": 2,
     "react/no-danger": 2,
     "react/no-did-mount-set-state": 2,
-    "react/no-did-update-set-state": 2,
     "react/no-find-dom-node": 2,
     "react/no-is-mounted": 2,
     "react/no-string-refs": 0,

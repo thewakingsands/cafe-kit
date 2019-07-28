@@ -1,4 +1,4 @@
-import { Component } from 'preact'
+import { h, Component } from 'preact'
 
 export interface ICKContext {
   apiBaseUrl: string
@@ -13,6 +13,6 @@ export class CKContextProvider extends Component<ICKContext> {
   }
 
   public render() {
-    return this.props.children[0]
+    return <div>{this.props.children}</div>
   }
 }

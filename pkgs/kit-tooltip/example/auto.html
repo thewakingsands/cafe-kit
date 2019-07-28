@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>CafeKit 悬浮窗</title>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.15.8/build/styles/default.min.css">
+  <style>
+    textarea {
+      width: 100%;
+      height: auto;
+    }
+    a {
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>CafeKit 悬浮窗</h1>
+  <p>当前支持物品详情的悬浮窗。</p>
+  <h2>引入代码</h2>
+  <textarea lang="html">
+<script src="https://unpkg.cnpmjs.org/@thewakingsands/kit-tooltip/dist/bundle.js"></script>
+<script>CafeKitTooltip.initTooltip()</script>
+  </textarea>
+  <h2>物品悬浮窗</h2>
+  <h3>自动识别灰机链接</h3>
+  <p>当 URL 为灰机的物品 URL 时，自动识别并加上悬浮窗。例如：</p>
+  <p>
+    <a href="https://ff14.huijiwiki.com/wiki/%E7%89%A9%E5%93%81:%E9%85%92%E7%A5%9E%E6%9D%96%C2%B7%E7%A9%B6%E6%9E%81" target="_blank">酒神杖·究极</a>
+    <a href="https://ff14.huijiwiki.com/wiki/Item:酒神杖·镇魂" target="_blank" class="cafekit"><span class="ck-rarity-4">酒神杖·镇魂</span></a>
+  </p>
+  <textarea lang="html">
+    <a href="https://ff14.huijiwiki.com/wiki/物品:酒神杖·究极">酒神杖·究极</a>
+  </textarea>
+  <h2>配置选项</h2>
+  <textarea lang="javascript">
+CafeKitTooltip.initTooltip({
+  context: {
+    apiBaseUrl: 'https://cafemaker.wakingsands.com',  // xivapi 或 cafemaker 的 url；最后不要有斜线
+    iconBaseUrl: 'https://cafemaker.wakingsands.com/i', // 图标 cdn 的 url；最后不要有斜线
+    defaultHq: true,  // 是否默认显示 HQ 数据
+    hideSeCopyright: false, // 是否隐藏 SE 版权信息
+  },
+  links: {
+    detectWikiLinks: true,  // 是否自动识别 wiki 物品链接
+    itemNameAttribute: 'data-ck-item-name', // 自定义悬浮窗时，声明物品名字的属性
+    itemIdAttribute: 'data-ck-item-id', // 自定义悬浮窗时，声明物品 ID 的属性
+    rootContainer: document.body, // 监控的根元素
+  },
+})
+  </textarea>
+  <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.15.8/build/highlight.min.js"></script>
+  <script>
+    function escapeHtml(unsafe) {
+      return unsafe
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;")
+    }
+
+    document.querySelectorAll('textarea[lang]').forEach(function (block) {
+      var lang = block.getAttribute('lang')
+      var codeEl = document.createElement('code')
+      var preEl = document.createElement('pre')
+      preEl.className = lang
+      preEl.appendChild(codeEl)
+      codeEl.innerHTML = escapeHtml(block.value.trim())
+
+      hljs.highlightBlock(preEl)
+
+      block.parentElement.insertBefore(preEl, block)
+      block.parentElement.removeChild(block)
+    })
+  </script>
+  <script src="../bundle.js"></script>
+  <script>
+    CafeKitTooltip.initTooltip()
+  </script>
+</body>
+</html>
