@@ -7,14 +7,17 @@
   <title>Document</title>
 </head>
 <body>
+  <h2>技能悬浮窗</h2>
+  <div>
+    <div class="cafekit" id="container2" style="display: flex; flex-direction: row; flex-wrap: wrap;"></div>
+  </div>
   <h2>物品悬浮窗</h2>
   <div>
-    <p>手动加载演示</p>
     <div class="cafekit" id="container1" style="display: flex; flex-direction: row; flex-wrap: wrap;"></div>
   </div>
   <script src="../bundle.js"></script>
   <script>
-      const { CKContextProvider, CKItem, render, h } = CafeKitTooltip
+      const { CKContextProvider, CKItem, CKAction, render, h } = CafeKitTooltip
 
       const names = ['罗刹大盾', '罗刹学士手甲', '番茄炖蛋', '伽黎亚玩偶', '削脊拳', '安忒亚·优雷卡', '万辞全书·究极', '404']
 
@@ -36,6 +39,24 @@
 
         document.getElementById('container1').appendChild(el)
       }
+
+      const el = document.createElement('div')
+      el.style.margin = '5px'
+
+      render(
+        h(CKContextProvider, {
+          apiBaseUrl: 'https://cafemaker.wakingsands.com',
+          iconBaseUrl: 'https://cafemaker.wakingsands.com/i',
+          defaultHq: true,
+          hideSeCopyright: false,
+        }, [
+          h(CKAction, {name: '毁坏'}),
+          h(CKAction, {name: '毁坏', jobId: 26}),
+        ]),
+        el
+      )
+
+      document.getElementById('container2').appendChild(el)
   </script>
 </body>
 </html>

@@ -99,6 +99,23 @@ initTooltip()
 <img src="https://huiji-public.huijistatic.com/ff14/uploads/e/e6/Fa00b0bf983e1923d08095ab2ca2003978c95ac6.png" data-ck-item-id="8654">
   </textarea>
 
+  <h2>技能悬浮窗</h2>
+  <p>基本用法和物品一模一样，不作额外解说。</p>
+  <textarea lang="html">
+<span data-ck-action-name>苦难之心</span>
+<span data-ck-action-name="苦难之心">123456</span>
+  </textarea>
+  <textarea lang="html">
+<span data-ck-action-id="7507">赤疾风(赤魔法师28级)</span>
+  </textarea>
+  <h3>指定职业</h3>
+  <p>由于 5.0 开始学者获得了部分和召唤一样名字但效果不一样的技能，所以增加了职业指定功能。</p>
+  <textarea lang="html">
+<span data-ck-action-name="毁坏" data-ck-action-job-id="28">毁坏(学者)</span>
+<span data-ck-action-name="毁坏" data-ck-action-job-id="26">毁坏(秘术师)</span>
+  </textarea>
+  <p>职业 ID 列表可参考灰机 WIKI <a href="https://ff14.huijiwiki.com/wiki/%E6%A8%A1%E5%9D%97:Base" target="_blank">配置模块</a>的代码(CLASSJOB_ID)。</p>
+
   <h2>配置选项</h2>
   <p>初始化的时候有不少配置选项可以用，请不要错过。</p>
   <p>由于 CafeMaker 服务器本身使用 CloudFlare 缓存，在部分地区可能面临打不开的情况。请考虑自行增加一层 CDN，并修改初始化选项中的地址。</p>
@@ -114,6 +131,8 @@ CafeKitTooltip.initTooltip({
     detectWikiLinks: true,  // 是否自动识别 wiki 物品链接
     itemNameAttribute: 'data-ck-item-name', // 自定义悬浮窗时，声明物品名字的属性
     itemIdAttribute: 'data-ck-item-id', // 自定义悬浮窗时，声明物品 ID 的属性
+    actionNameAttribute: 'data-ck-action-name', // 自定义悬浮窗时，声明技能名字的属性
+    actionIdAttribute: 'data-ck-action-id', // 自定义悬浮窗时，声明技能 ID 的属性
     rootContainer: document.body, // 监控的根元素
   },
 })

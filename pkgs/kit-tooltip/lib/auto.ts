@@ -2,7 +2,7 @@ import { ICKContext } from './CKContextProvider'
 import { isSupportPassive } from './utils/isSupportPassive'
 import { closest } from './utils/closest'
 import { parents } from './utils/parents'
-import { popupItem, hidePopup } from './popup'
+import { popupItem, popupAction, hidePopup } from './popup'
 import { ICKItemProps } from './CKItem'
 
 export interface ITooltipOptions {
@@ -11,6 +11,8 @@ export interface ITooltipOptions {
     detectWikiLinks: boolean
     itemNameAttribute: string
     itemIdAttribute: string
+    actionNameAttribute: string
+    actionIdAttribute: string
     rootContainer: HTMLElement
   }
 }
@@ -26,6 +28,8 @@ const defaultOptions: ITooltipOptions = {
     detectWikiLinks: true,
     itemNameAttribute: 'data-ck-item-name',
     itemIdAttribute: 'data-ck-item-id',
+    actionNameAttribute: 'data-ck-action-name',
+    actionIdAttribute: 'data-ck-action-id',
     rootContainer: document.body,
   },
 }
@@ -49,23 +53,35 @@ export function initTooltip(opts: Partial<ITooltipOptions> = {}) {
 }
 
 interface IRenderProps {
-  props: ICKItemProps
+  props: any
   element: HTMLElement
 }
 
 function getMouseOverHandler(options: ITooltipOptions): EventListenerOrEventListenerObject {
   return event => {
     let props: IRenderProps
+    let type = 'item'
 
     if (options.links.itemIdAttribute || options.links.itemNameAttribute) {
-      props = props || handleAttr(event.target as HTMLElement, options)
+      props = props || handleAttrItem(event.target as HTMLElement, options)
     }
     if (options.links.detectWikiLinks) {
       props = props || handleWiki(event.target as HTMLElement)
     }
+    if (options.links.actionIdAttribute || options.links.actionNameAttribute) {
+      const actionP = handleAttrAction(event.target as HTMLElement, options)
+      if (actionP) {
+        type = 'action'
+        props = actionP
+      }
+    }
 
     if (props) {
-      popupItem(options.context, props.props, props.element)
+      if (type === 'item') {
+        popupItem(options.context, props.props, props.element)
+      } else {
+        popupAction(options.context, props.props, props.element)
+      }
 
       if (!hasFlag(props.element, 'leave')) {
         const leaveHandler = () => {
@@ -120,7 +136,7 @@ function handleWiki(el: HTMLElement): IRenderProps {
   }
 }
 
-function handleAttr(el: HTMLElement, options: ITooltipOptions): IRenderProps {
+function handleAttrItem(el: HTMLElement, options: ITooltipOptions): IRenderProps {
   const itemNameDom = closest(el, `[${options.links.itemNameAttribute}]`)
   const itemIdDom = closest(el, `[${options.links.itemIdAttribute}]`)
 
@@ -137,6 +153,30 @@ function handleAttr(el: HTMLElement, options: ITooltipOptions): IRenderProps {
     return {
       props: { name },
       element: itemNameDom,
+    }
+  }
+
+  return null
+}
+
+function handleAttrAction(el: HTMLElement, options: ITooltipOptions): IRenderProps {
+  const actionNameDom = closest(el, `[${options.links.actionNameAttribute}]`)
+  const actionIdDom = closest(el, `[${options.links.actionIdAttribute}]`)
+
+  if (actionIdDom) {
+    return {
+      props: { id: actionIdDom.getAttribute(options.links.actionIdAttribute) },
+      element: actionIdDom,
+    }
+  }
+
+  if (actionNameDom) {
+    const job = actionNameDom.getAttribute('data-ck-action-job-id') || null
+    const name = actionNameDom.getAttribute(options.links.actionNameAttribute) || actionNameDom.innerText.trim()
+
+    return {
+      props: { name, jobId: job },
+      element: actionNameDom,
     }
   }
 

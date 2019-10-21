@@ -1,5 +1,6 @@
 import { render, h } from 'preact'
 import { CKItem, ICKItemProps } from './CKItem'
+import { CKAction, ICKActionProps } from './CKAction'
 import { ICKContext, CKContextProvider } from './CKContextProvider'
 
 const popupContainer = document.createElement('div')
@@ -21,6 +22,20 @@ export function popupItem(context: ICKContext, props: ICKItemProps, refEl: HTMLE
 
   render(
     h(CKContextProvider, context, [h(CKItem, props)]),
+    popupContainer,
+    popupContainer.children && popupContainer.children[0],
+  )
+
+  popupElement(refEl)
+}
+
+export function popupAction(context: ICKContext, props: ICKActionProps, refEl: HTMLElement) {
+  clearTimeout(hideTimer)
+
+  props.onUpdate = handleUpdate
+
+  render(
+    h(CKContextProvider, context, [h(CKAction, props)]),
     popupContainer,
     popupContainer.children && popupContainer.children[0],
   )
