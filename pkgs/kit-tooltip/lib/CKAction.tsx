@@ -76,7 +76,7 @@ export class CKAction extends Component<ICKActionProps, ICKActionState> {
 
     let url = `${this.context.apiBaseUrl}/search?indexes=Action&limit=1&string=${encodeURIComponent(
       this.props.name,
-    )}&filters=IsPlayerAction=1,IsPvP=${this.props.pvp ? '1' : '0'}`
+    )}&filters=ClassJobLevel>0,IsPvP=${this.props.pvp ? '1' : '0'}`
     if (this.props.jobId) {
       url = url + ',ClassJobTargetID=' + this.props.jobId
     }
