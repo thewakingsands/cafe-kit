@@ -125,7 +125,7 @@ export class CKAction extends Component<ICKActionProps, ICKActionState> {
     } = this.state.data
 
     const jobName = ClassJobName || ClassJobCategoryName
-    const basicRange = jobName in ['舞者', '吟游诗人', '弓箭手', '机工士'] ? 25 : 3
+    const basicRange = ['舞者', '吟游诗人', '弓箭手', '机工士'].indexOf(jobName) > -1 ? 25 : 3
     const actionRange = Range < 0 ? basicRange : Range
 
     const ac: ICKAttributesProps = { attrs: [] }
