@@ -54,7 +54,7 @@ export class CKAction extends Component<ICKActionProps, ICKActionState> {
     }
 
     const columns =
-      'Icon,Name,Description,ActionCategory.Name,ClassJob.Name,MaxCharges,Range,Cast100ms,Recast100ms,ClassJobLevel,EffectRange'
+      'Icon,Name,Description,ActionCategory.Name,ClassJob.Name,MaxCharges,Range,Cast100ms,Recast100ms,ClassJobLevel,EffectRange,ClassJobCategory.Name'
     const res = await fetch(`${this.context.apiBaseUrl}/Action/${id}?columns=${columns}`)
     const json = await res.json()
 
@@ -115,6 +115,7 @@ export class CKAction extends Component<ICKActionProps, ICKActionState> {
       Description,
       ActionCategory: { Name: ActionCategoryName },
       ClassJob: { Name: ClassJobName },
+      ClassJobCategory: { Name: ClassJobCategoryName },
       MaxCharges,
       Range,
       Cast100ms,
@@ -123,12 +124,20 @@ export class CKAction extends Component<ICKActionProps, ICKActionState> {
       EffectRange,
     } = this.state.data
 
+    const jobName = ClassJobName || ClassJobCategoryName
+    const basicRange = jobName in ['舞者', '吟游诗人', '弓箭手', '机工士'] ? 25 : 3
+    const actionRange = Range < 0 ? basicRange : Range
+
     const ac: ICKAttributesProps = { attrs: [] }
     ac.attrs.push({ name: '范围', value: EffectRange + 'm', style: 'half' })
-    ac.attrs.push({ name: '距离', value: Range + 'm', style: 'half' })
-    ac.attrs.push({ name: '习得等级', value: `${ClassJobName} ${ClassJobLevel}级`, style: 'full' })
+    ac.attrs.push({ name: '距离', value: actionRange + 'm', style: 'half' })
+    ac.attrs.push({
+      name: '习得等级',
+      value: `${jobName} ${ClassJobLevel}级`,
+      style: 'half-full',
+    })
     if (MaxCharges) {
-      ac.attrs.push({ name: '充能层数', value: MaxCharges, style: 'full' })
+      ac.attrs.push({ name: '充能层数', value: MaxCharges, style: 'half-full' })
     }
 
     const iconUrl = `${this.context.iconBaseUrl}${Icon.replace(/^\/i/, '')}`
