@@ -356,7 +356,7 @@ export class CKItem extends Component<ICKItemProps, ICKItemState> {
     }
 
     // 制作&修理
-    if (ClassJobRepair) {
+    if (ClassJobRepair && ItemRepair) {
       ac.attrs.push({ name: '制作&修理', style: 'header' })
 
       const levelMeld = LevelEquip
