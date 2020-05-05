@@ -143,7 +143,7 @@ export class CKAction extends Component<ICKActionProps, ICKActionState> {
     const iconUrl = `${this.context.iconBaseUrl}${Icon.replace(/^\/i/, '')}`
 
     // eslint-disable-next-line react/no-danger
-    const descEl = <div dangerouslySetInnerHTML={{ __html: Description.replace(/\n\n/g, '<br>') }} />
+    const descEl = <div dangerouslySetInnerHTML={{ __html: Description.replace(/\n/g, '<br/>') }} />
 
     const year = new Date().getFullYear()
 
