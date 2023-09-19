@@ -138,31 +138,36 @@ function handleWiki(el: HTMLElement): IRenderProps {
   }
 }
 
+function parseBool(v: string): boolean |null {
+  if (!v) {
+    return null
+  }
+  if (v.toLowerCase() === 'true') {
+    return true
+  } else if (v.toLowerCase() === 'false') {
+    return false
+  }
+  return null
+}
+
 function handleAttrItem(el: HTMLElement, options: ITooltipOptions): IRenderProps {
   const itemNameDom = closest(el, `[${options.links.itemNameAttribute}]`)
   const itemIdDom = closest(el, `[${options.links.itemIdAttribute}]`)
-  let useHq: boolean | null = null
 
   if (itemIdDom) {
     const hq = itemIdDom.getAttribute(options.links.itemHqAttribute)
-    if (hq && hq.toLowerCase() === 'true') {
-      useHq = true
-    }
     return {
-      props: { id: itemIdDom.getAttribute(options.links.itemIdAttribute), hq: useHq },
+      props: { id: itemIdDom.getAttribute(options.links.itemIdAttribute), hq: parseBool(hq) },
       element: itemIdDom,
     }
   }
 
   if (itemNameDom) {
     const hq = itemNameDom.getAttribute(options.links.itemHqAttribute)
-    if (hq && hq.toLowerCase() === 'true') {
-      useHq = true
-    }
     const name = itemNameDom.getAttribute(options.links.itemNameAttribute) || itemNameDom.innerText.trim()
 
     return {
-      props: { name, hq: useHq },
+      props: { name, hq: parseBool(hq) },
       element: itemNameDom,
     }
   }
