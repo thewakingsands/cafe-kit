@@ -12,6 +12,7 @@ declare module '@thewakingsands/kit-tooltip' {
       detectWikiLinks: boolean
       itemNameAttribute: string
       itemIdAttribute: string
+      itemHqAttribute: string
       rootContainer: HTMLElement
     }
   }

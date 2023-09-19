@@ -11,6 +11,7 @@ export interface ITooltipOptions {
     detectWikiLinks: boolean
     itemNameAttribute: string
     itemIdAttribute: string
+    itemHqAttribute: string
     actionNameAttribute: string
     actionIdAttribute: string
     rootContainer: HTMLElement
@@ -28,6 +29,7 @@ const defaultOptions: ITooltipOptions = {
     detectWikiLinks: true,
     itemNameAttribute: 'data-ck-item-name',
     itemIdAttribute: 'data-ck-item-id',
+    itemHqAttribute: 'data-ck-item-hq',
     actionNameAttribute: 'data-ck-action-name',
     actionIdAttribute: 'data-ck-action-id',
     rootContainer: document.body,
@@ -139,19 +141,28 @@ function handleWiki(el: HTMLElement): IRenderProps {
 function handleAttrItem(el: HTMLElement, options: ITooltipOptions): IRenderProps {
   const itemNameDom = closest(el, `[${options.links.itemNameAttribute}]`)
   const itemIdDom = closest(el, `[${options.links.itemIdAttribute}]`)
+  let useHq: boolean | null = null
 
   if (itemIdDom) {
+    const hq = itemIdDom.getAttribute(options.links.itemHqAttribute)
+    if (hq && hq.toLowerCase() === 'true') {
+      useHq = true
+    }
     return {
-      props: { id: itemIdDom.getAttribute(options.links.itemIdAttribute) },
+      props: { id: itemIdDom.getAttribute(options.links.itemIdAttribute), hq: useHq },
       element: itemIdDom,
     }
   }
 
   if (itemNameDom) {
+    const hq = itemNameDom.getAttribute(options.links.itemHqAttribute)
+    if (hq && hq.toLowerCase() === 'true') {
+      useHq = true
+    }
     const name = itemNameDom.getAttribute(options.links.itemNameAttribute) || itemNameDom.innerText.trim()
 
     return {
-      props: { name },
+      props: { name, hq: useHq },
       element: itemNameDom,
     }
   }
