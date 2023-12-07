@@ -363,7 +363,7 @@ export class CKItem extends Component<ICKItemProps, ICKItemState> {
       const levelRepair = Math.max(LevelEquip - 10, 1)
 
       ac.attrs.push({ name: '修理等级', value: `${ClassJobRepair.Name} ${levelRepair}级以上`, style: 'full' })
-      ac.attrs.push({ name: '修理材料', value: ItemRepair.Name, style: 'full' })
+      ac.attrs.push({ name: '修理材料', value: ItemRepair.Item?.Name || ItemRepair.Name, style: 'full' })
 
       if (MateriaSlotCount) {
         ac.attrs.push({ name: '镶嵌魔晶石等级', value: `${ClassJobRepair.Name} ${levelMeld}级以上`, style: 'full' })
