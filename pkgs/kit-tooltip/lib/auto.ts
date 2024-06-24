@@ -14,6 +14,7 @@ export interface ITooltipOptions {
     itemHqAttribute: string
     actionNameAttribute: string
     actionIdAttribute: string
+    actionJobIdAttribute: string
     rootContainer: HTMLElement
   }
 }
@@ -32,6 +33,7 @@ const defaultOptions: ITooltipOptions = {
     itemHqAttribute: 'data-ck-item-hq',
     actionNameAttribute: 'data-ck-action-name',
     actionIdAttribute: 'data-ck-action-id',
+    actionJobIdAttribute: 'data-ck-action-job-id',
     rootContainer: document.body,
   },
 }
@@ -187,7 +189,7 @@ function handleAttrAction(el: HTMLElement, options: ITooltipOptions): IRenderPro
   }
 
   if (actionNameDom) {
-    const job = actionNameDom.getAttribute('data-ck-action-job-id') || null
+    const job = actionNameDom.getAttribute(options.links.actionJobIdAttribute) || null
     const name = actionNameDom.getAttribute(options.links.actionNameAttribute) || actionNameDom.innerText.trim()
 
     return {
