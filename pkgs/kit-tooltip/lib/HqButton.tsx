@@ -1,4 +1,3 @@
-import { Component } from 'preact'
 import { hqSvg } from './hqIcon'
 
 export interface IHqButtonProps {
@@ -6,35 +5,29 @@ export interface IHqButtonProps {
   onHqChange: (value: boolean) => void
 }
 
-export class HqButton extends Component<IHqButtonProps> {
-  public render() {
-    const style: any = {
-      cursor: 'pointer',
-      userSelect: 'none',
-    }
-
-    if (!this.props.hq) {
-      style.opacity = 0.2
-    }
-
-    return (
-      <span
-        style={style}
-        onClick={this.handleHqClick}
-        onMouseDown={this.preventSelectText}
-      >
-        {' '}
-        {hqSvg}
-      </span>
-    )
+export function HqButton(props: IHqButtonProps) {
+  const style: any = {
+    cursor: 'pointer',
+    userSelect: 'none',
   }
 
-  private handleHqClick = () => {
-    this.props.onHqChange(!this.props.hq)
+  if (!props.hq) {
+    style.opacity = 0.2
   }
 
-  private preventSelectText = (e: MouseEvent) => {
+  const handleHqClick = () => {
+    props.onHqChange(!props.hq)
+  }
+
+  const preventSelectText = (e: MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
   }
+
+  return (
+    <span style={style} onClick={handleHqClick} onMouseDown={preventSelectText}>
+      {' '}
+      {hqSvg}
+    </span>
+  )
 }

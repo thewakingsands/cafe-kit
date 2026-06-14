@@ -19,8 +19,6 @@ for (const name of names) {
     h(
       CKContextProvider,
       {
-        apiBaseUrl: 'https://cafemaker.wakingsands.com',
-        iconBaseUrl: 'https://cafemaker.wakingsands.com/i',
         defaultHq: true,
         hideSeCopyright: false,
       },
@@ -39,8 +37,6 @@ render(
   h(
     CKContextProvider,
     {
-      apiBaseUrl: 'https://cafemaker.wakingsands.com',
-      iconBaseUrl: 'https://cafemaker.wakingsands.com/i',
       defaultHq: true,
       hideSeCopyright: false,
     },

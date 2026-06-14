@@ -1,6 +1,6 @@
-let passiveCache = null
+let passiveCache: boolean | null = null
 
-export function isSupportPassive() {
+export function isSupportPassive(): boolean {
   if (passiveCache !== null) {
     return passiveCache
   }
@@ -26,4 +26,6 @@ export function isSupportPassive() {
     passiveCache = passive
     return passive
   }
+
+  return false
 }

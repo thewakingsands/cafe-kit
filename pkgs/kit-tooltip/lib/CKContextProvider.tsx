@@ -1,18 +1,27 @@
-import { Component } from 'preact'
+import { type ComponentChildren, createContext } from 'preact'
 
 export interface ICKContext {
-  apiBaseUrl: string
-  iconBaseUrl: string
+  xivapiVersion?: string
+  xivapiLanguage?: 'none' | 'en' | 'ja' | 'de' | 'fr' | 'chs' | 'tc' | 'ko'
   defaultHq: boolean
   hideSeCopyright: boolean
 }
 
-export class CKContextProvider extends Component<ICKContext> {
-  public getChildContext() {
-    return this.props
-  }
+const defaultContext: ICKContext = {
+  xivapiVersion: 'latest',
+  xivapiLanguage: 'chs',
+  defaultHq: true,
+  hideSeCopyright: false,
+}
+export const CKContext = createContext<ICKContext>(defaultContext)
 
-  public render() {
-    return <div>{this.props.children}</div>
-  }
+export const CKContextProvider = (props: {
+  value: ICKContext
+  children: ComponentChildren
+}) => {
+  return (
+    <CKContext.Provider value={props.value || defaultContext}>
+      {props.children}
+    </CKContext.Provider>
+  )
 }

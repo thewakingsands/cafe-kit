@@ -24,7 +24,7 @@ export const request = async (
   payload: RequestPayload,
 ): Promise<RequestPayload> => {
   const { path, params, options = {} } = payload
-  
+
   if (!options?.verbose && params?.verbose !== undefined) {
     options.verbose = Boolean(params?.verbose)
     delete params?.verbose
@@ -32,7 +32,7 @@ export const request = async (
 
   const url = new URL(
     path instanceof URL ? path.toString() : path.replace(/^\/+/, ''),
-    endpoint,
+    apiEndpoint,
   )
   if (params) {
     const array: Record<string, string> = {
@@ -51,19 +51,16 @@ export const request = async (
     ).toString()
 
     if (!params.language) {
-      if (options.language)
-        url.searchParams.set('language', options.language)
+      if (options.language) url.searchParams.set('language', options.language)
     }
 
     if (!params.version) {
-      if (options?.version)
-        url.searchParams.set('version', options.version)
+      if (options?.version) url.searchParams.set('version', options.version)
     }
   }
 
   const response = await fetch(url)
-  if (options?.verbose)
-    console.debug(`Requesting ${path} with params:`, params)
+  if (options?.verbose) console.debug(`Requesting ${path} with params:`, params)
 
   if (response.ok) {
     const contentType = response.headers.get('content-type')

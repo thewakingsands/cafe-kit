@@ -5,6 +5,7 @@
   "types": "dist/lib/main.d.ts",
   "dependencies": {
     "@thewakingsands/kit-common": "workspace:^",
+    "@thewakingsands/xivapi-v2": "workspace:^",
     "preact": "catalog:"
   },
   "devDependencies": {

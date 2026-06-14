@@ -3,24 +3,26 @@ import { hidePopup, popupAction, popupItem } from './popup'
 import { closest } from './utils/closest'
 import { isSupportPassive } from './utils/isSupportPassive'
 
+export interface ITooltipLinks {
+  detectWikiLinks: boolean
+  itemNameAttribute: string
+  itemIdAttribute: string
+  itemHqAttribute: string
+  actionNameAttribute: string
+  actionIdAttribute: string
+  actionJobIdAttribute: string
+  rootContainer: HTMLElement
+}
+
 export interface ITooltipOptions {
   context: ICKContext
-  links: {
-    detectWikiLinks: boolean
-    itemNameAttribute: string
-    itemIdAttribute: string
-    itemHqAttribute: string
-    actionNameAttribute: string
-    actionIdAttribute: string
-    actionJobIdAttribute: string
-    rootContainer: HTMLElement
-  }
+  links: ITooltipLinks
 }
 
 const defaultOptions: ITooltipOptions = {
   context: {
-    apiBaseUrl: 'https://cafemaker.wakingsands.com',
-    iconBaseUrl: 'https://cafemaker.wakingsands.com/i',
+    xivapiVersion: 'latest',
+    xivapiLanguage: 'chs',
     defaultHq: true,
     hideSeCopyright: false,
   },

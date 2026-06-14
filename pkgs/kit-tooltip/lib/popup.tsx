@@ -1,4 +1,4 @@
-import { h, render } from 'preact'
+import { render } from 'preact'
 import { CKAction, type ICKActionProps } from './CKAction'
 import { CKContextProvider, type ICKContext } from './CKContextProvider'
 import { CKItem, type ICKItemProps } from './CKItem'
@@ -25,9 +25,10 @@ export function popupItem(
   props.onUpdate = handleUpdate
 
   render(
-    h(CKContextProvider, context, [h(CKItem, props)]),
+    <CKContextProvider value={context}>
+      <CKItem {...props} />
+    </CKContextProvider>,
     popupContainer,
-    popupContainer.children?.[0],
   )
 
   popupElement(refEl)
@@ -43,9 +44,10 @@ export function popupAction(
   props.onUpdate = handleUpdate
 
   render(
-    h(CKContextProvider, context, [h(CKAction, props)]),
+    <CKContextProvider value={context}>
+      <CKAction {...props} />
+    </CKContextProvider>,
     popupContainer,
-    popupContainer.children?.[0],
   )
 
   popupElement(refEl)

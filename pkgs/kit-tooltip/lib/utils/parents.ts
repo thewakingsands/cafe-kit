@@ -1,5 +1,5 @@
 export function parents(parent: HTMLElement, selector: string): HTMLElement[] {
-  let node: HTMLElement = parent
+  let node: HTMLElement | null = parent
   const results: HTMLElement[] = []
 
   do {
