@@ -1,15 +1,16 @@
-import { Component } from 'preact'
+import type { ComponentChildren, CSSProperties } from 'preact'
 
-export class CKAction extends Component<{ style?: any; className?: any }> {
-  public render() {
-    return (
-      <div
-        class={`ck-action ${this.props.className || ''}`}
-        style={this.props.style}
-      >
-        <div class="ck-action-cover" />
-        {this.props.children}
-      </div>
-    )
-  }
+export interface ICKActionProps {
+  style?: CSSProperties
+  className?: string
+  children?: ComponentChildren
+}
+
+export function CKAction(props: ICKActionProps) {
+  return (
+    <div class={`ck-action ${props.className || ''}`} style={props.style}>
+      <div class="ck-action-cover" />
+      {props.children}
+    </div>
+  )
 }

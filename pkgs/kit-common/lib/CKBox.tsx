@@ -1,7 +1,5 @@
-import { Component } from 'preact'
+import type { ComponentChildren } from 'preact'
 
-export class CKBox extends Component {
-  public render() {
-    return <div class="ck-box">{this.props.children}</div>
-  }
+export function CKBox(props: { children?: ComponentChildren }) {
+  return <div class="ck-box">{props.children}</div>
 }

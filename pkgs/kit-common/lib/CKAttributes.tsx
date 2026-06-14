@@ -1,5 +1,3 @@
-import { Component } from 'preact'
-
 export interface ICKAttribute {
   name: string
   value?: string | number
@@ -11,26 +9,24 @@ export interface ICKAttributesProps {
   attrs: ICKAttribute[]
 }
 
-export class CKAttributes extends Component<ICKAttributesProps> {
-  public render() {
-    return (
-      <div class="ck-attrs">
-        {this.props.attrs.map((attr) => (
+export function CKAttributes(props: ICKAttributesProps) {
+  return (
+    <div class="ck-attrs">
+      {props.attrs.map((attr) => (
+        <div
+          class={`ck-attrs-${attr.style} ${attr.name ? '' : 'ck-attrs-empty'}`}
+        >
           <div
-            class={`ck-attrs-${attr.style} ${attr.name ? '' : 'ck-attrs-empty'}`}
+            class={[
+              'ck-attrs-name',
+              attr.titleClass == null ? 'ck-hl' : attr.titleClass,
+            ].join(' ')}
           >
-            <div
-              class={[
-                'ck-attrs-name',
-                attr.titleClass == null ? 'ck-hl' : attr.titleClass,
-              ].join(' ')}
-            >
-              {attr.name}
-            </div>
-            {attr.value ? <div class="ck-attrs-value">{attr.value}</div> : null}
+            {attr.name}
           </div>
-        ))}
-      </div>
-    )
-  }
+          {attr.value ? <div class="ck-attrs-value">{attr.value}</div> : null}
+        </div>
+      ))}
+    </div>
+  )
 }

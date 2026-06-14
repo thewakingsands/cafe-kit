@@ -1,7 +1,5 @@
-import { Component } from 'preact'
+import type { ComponentChildren } from 'preact'
 
-export class CKStatGroup extends Component {
-  public render() {
-    return <div class="ck-stat-group">{this.props.children}</div>
-  }
+export function CKStatGroup(props: { children?: ComponentChildren }) {
+  return <div class="ck-stat-group">{props.children}</div>
 }

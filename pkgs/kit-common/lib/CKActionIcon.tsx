@@ -1,15 +1,14 @@
-import { Component } from 'preact'
 import { CKAction } from './CKAction'
 
-export class CKActionIcon extends Component<{
+export interface ICKActionIconProps {
   src: string
   size: number | string
-}> {
-  public render() {
-    return (
-      <CKAction style={{ width: this.props.size, height: this.props.size }}>
-        <img src={this.props.src} />
-      </CKAction>
-    )
-  }
+}
+
+export function CKActionIcon(props: ICKActionIconProps) {
+  return (
+    <CKAction style={{ width: props.size, height: props.size }}>
+      <img src={props.src} />
+    </CKAction>
+  )
 }

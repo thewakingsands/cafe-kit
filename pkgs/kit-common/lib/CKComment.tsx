@@ -1,7 +1,5 @@
-import { Component } from 'preact'
+import type { ComponentChildren } from 'preact'
 
-export class CKComment extends Component {
-  public render() {
-    return <div class="ck-comment">{this.props.children}</div>
-  }
+export function CKComment(props: { children?: ComponentChildren }) {
+  return <div class="ck-comment">{props.children}</div>
 }

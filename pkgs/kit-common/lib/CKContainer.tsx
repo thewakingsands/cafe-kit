@@ -1,14 +1,15 @@
-import { Component } from 'preact'
+import type { ComponentChildren } from 'preact'
 
-export class CKContainer extends Component<{ style?: any; className?: any }> {
-  public render() {
-    return (
-      <div
-        class={`ck-container ${this.props.className || ''}`}
-        style={this.props.style}
-      >
-        {this.props.children}
-      </div>
-    )
-  }
+export interface ICKContainerProps {
+  style?: any
+  className?: any
+  children?: ComponentChildren
+}
+
+export function CKContainer(props: ICKContainerProps) {
+  return (
+    <div class={`ck-container ${props.className || ''}`} style={props.style}>
+      {props.children}
+    </div>
+  )
 }

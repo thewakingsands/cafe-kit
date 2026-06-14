@@ -1,11 +1,9 @@
-import { Component } from 'preact'
+import type { ComponentChildren } from 'preact'
 
-export class CKBoxBottom extends Component {
-  public render() {
-    return (
-      <div class="ck-box-bottom-wrapper">
-        <div class="ck-box-bottom">{this.props.children}</div>
-      </div>
-    )
-  }
+export function CKBoxBottom(props: { children?: ComponentChildren }) {
+  return (
+    <div class="ck-box-bottom-wrapper">
+      <div class="ck-box-bottom">{props.children}</div>
+    </div>
+  )
 }
