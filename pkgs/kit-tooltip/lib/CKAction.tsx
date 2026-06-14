@@ -1,15 +1,15 @@
-import { h, Component } from 'preact'
 import {
+  CKAttributes,
   CKBox,
+  CKComment,
   CKContainer,
   CKItemName,
-  CKStatGroup,
   CKStat,
-  ICKAttributesProps,
-  CKAttributes,
-  CKComment,
+  CKStatGroup,
+  type ICKAttributesProps,
 } from '@thewakingsands/kit-common'
-import { ICKContext } from './CKContextProvider'
+import { Component } from 'preact'
+import type { ICKContext } from './CKContextProvider'
 
 export interface ICKActionProps {
   name?: string
@@ -36,7 +36,11 @@ export class CKAction extends Component<ICKActionProps, ICKActionState> {
       this.props.onUpdate()
     }
 
-    if (prevProps.id !== this.props.id || prevProps.name !== this.props.name || prevProps.jobId !== this.props.jobId) {
+    if (
+      prevProps.id !== this.props.id ||
+      prevProps.name !== this.props.name ||
+      prevProps.jobId !== this.props.jobId
+    ) {
       this.setState({ data: null, error: null })
       try {
         await this.getData()
@@ -55,7 +59,9 @@ export class CKAction extends Component<ICKActionProps, ICKActionState> {
 
     const columns =
       'Icon,Name,Description,ActionCategory.Name,ClassJob.Name,MaxCharges,Range,Cast100ms,Recast100ms,ClassJobLevel,EffectRange,ClassJobCategory.Name'
-    const res = await fetch(`${this.context.apiBaseUrl}/Action/${id}?columns=${columns}`)
+    const res = await fetch(
+      `${this.context.apiBaseUrl}/Action/${id}?columns=${columns}`,
+    )
     const json = await res.json()
 
     this.setState({ data: json })
@@ -63,8 +69,8 @@ export class CKAction extends Component<ICKActionProps, ICKActionState> {
 
   private async getId() {
     if (this.props.id) {
-      const numId = parseInt('' + this.props.id)
-      if (!isNaN(numId)) {
+      const numId = parseInt(`${this.props.id}`, 10)
+      if (!Number.isNaN(numId)) {
         return numId
       }
     }
@@ -78,7 +84,7 @@ export class CKAction extends Component<ICKActionProps, ICKActionState> {
       this.props.name,
     )}&filters=ClassJobLevel>0,IsPvP=${this.props.pvp ? '1' : '0'}`
     if (this.props.jobId) {
-      url = url + ',ClassJobTargetID=' + this.props.jobId
+      url = `${url},ClassJobTargetID=${this.props.jobId}`
     }
 
     const res = await fetch(url)
@@ -125,12 +131,13 @@ export class CKAction extends Component<ICKActionProps, ICKActionState> {
     } = this.state.data
 
     const jobName = ClassJobName || ClassJobCategoryName
-    const basicRange = ['舞者', '吟游诗人', '弓箭手', '机工士'].indexOf(jobName) > -1 ? 25 : 3
+    const basicRange =
+      ['舞者', '吟游诗人', '弓箭手', '机工士'].indexOf(jobName) > -1 ? 25 : 3
     const actionRange = Range < 0 ? basicRange : Range
 
     const ac: ICKAttributesProps = { attrs: [] }
-    ac.attrs.push({ name: '范围', value: EffectRange + 'm', style: 'half' })
-    ac.attrs.push({ name: '距离', value: actionRange + 'm', style: 'half' })
+    ac.attrs.push({ name: '范围', value: `${EffectRange}m`, style: 'half' })
+    ac.attrs.push({ name: '距离', value: `${actionRange}m`, style: 'half' })
     ac.attrs.push({
       name: '习得等级',
       value: `${jobName} ${ClassJobLevel}级`,
@@ -143,7 +150,13 @@ export class CKAction extends Component<ICKActionProps, ICKActionState> {
     const iconUrl = `${this.context.iconBaseUrl}${Icon.replace(/^\/i/, '')}`
 
     // eslint-disable-next-line react/no-danger
-    const descEl = <div dangerouslySetInnerHTML={{ __html: Description.replace(/\n/g, '<br/>') }} />
+    const descEl = (
+      <div
+        dangerouslySetInnerHTML={{
+          __html: Description.replace(/\n/g, '<br/>'),
+        }}
+      />
+    )
 
     const year = new Date().getFullYear()
 
@@ -151,7 +164,13 @@ export class CKAction extends Component<ICKActionProps, ICKActionState> {
       <CKBox>
         <div style={{ width: 320, padding: 8 }}>
           <CKContainer style={{ paddingBottom: 0 }}>
-            <CKItemName name={Name} rarity={0} type={ActionCategoryName} size="medium" iconSrc={iconUrl} />
+            <CKItemName
+              name={Name}
+              rarity={0}
+              type={ActionCategoryName}
+              size="medium"
+              iconSrc={iconUrl}
+            />
           </CKContainer>
           <div style={{ paddingTop: 6 }}>
             <CKStatGroup>
@@ -164,10 +183,23 @@ export class CKAction extends Component<ICKActionProps, ICKActionState> {
             <CKAttributes {...ac} />
           </CKContainer>
           <CKComment>
-            <p style={{ fontSize: '9px', textAlign: 'right', opacity: 0.6, userSelect: 'none' }}>
-              {this.context.hideSeCopyright ? null : `© ${year} SQUARE ENIX CO., LTD. `}
+            <p
+              style={{
+                fontSize: '9px',
+                textAlign: 'right',
+                opacity: 0.6,
+                userSelect: 'none',
+              }}
+            >
+              {this.context.hideSeCopyright
+                ? null
+                : `© ${year} SQUARE ENIX CO., LTD. `}
               Powered by{' '}
-              <a href="https://ffcafe.org/?utm_source=ckitem" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://ffcafe.org/?utm_source=ckitem"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 FFCafe
               </a>
             </p>
@@ -182,5 +214,5 @@ function parse100ms(time: number) {
   if (time === 0) {
     return '即时'
   }
-  return time / 10 + '秒'
+  return `${time / 10}秒`
 }

@@ -1,18 +1,18 @@
-import { h, Component } from 'preact'
 import {
+  CKAttributes,
   CKBox,
+  CKComment,
   CKContainer,
   CKItemName,
-  CKStatGroup,
   CKStat,
-  ICKAttributesProps,
-  CKAttributes,
-  CKComment,
+  CKStatGroup,
+  type ICKAttribute,
+  type ICKAttributesProps,
 } from '@thewakingsands/kit-common'
-import { ICKContext } from './CKContextProvider'
-import { hqSvg } from './hqIcon'
-import { copyText } from './utils/copyText'
+import { Component } from 'preact'
+import type { ICKContext } from './CKContextProvider'
 import { HqButton } from './HqButton'
+import { copyText } from './utils/copyText'
 
 export interface ICKItemProps {
   name?: string
@@ -24,7 +24,7 @@ export interface ICKItemProps {
 interface ICKItemState {
   item?: any
   error?: any
-  copyMessage?: string
+  copyMessage?: string | null
   hq?: boolean
 }
 
@@ -65,8 +65,8 @@ export class CKItem extends Component<ICKItemProps, ICKItemState> {
 
   private async getItemId() {
     if (this.props.id) {
-      const numId = parseInt('' + this.props.id)
-      if (!isNaN(numId)) {
+      const numId = parseInt(`${this.props.id}`, 10)
+      if (!Number.isNaN(numId)) {
         return numId
       }
     }
@@ -213,7 +213,8 @@ export class CKItem extends Component<ICKItemProps, ICKItemState> {
         99999: {
           name: '物理自动攻击',
           id: 99999,
-          value: m => parseFloat((((m[12].value || 0) / 3) * m[14].value).toFixed(2)),
+          value: (m) =>
+            parseFloat((((m[12].value || 0) / 3) * m[14].value).toFixed(2)),
         },
       }
 
@@ -275,7 +276,7 @@ export class CKItem extends Component<ICKItemProps, ICKItemState> {
         children.push(
           <div style={{ paddingTop: 6 }}>
             <CKStatGroup>
-              {stats.map(s => (
+              {stats.map((s) => (
                 <CKStat {...s} />
               ))}
             </CKStatGroup>
@@ -284,19 +285,31 @@ export class CKItem extends Component<ICKItemProps, ICKItemState> {
       }
 
       // 职业
-      ac.attrs.push({ name: ClassJobCategory.Name, style: 'full', titleClass: 'ck-success' })
-      ac.attrs.push({ name: LevelEquip + '级以上', style: 'full', titleClass: 'ck-success' })
+      ac.attrs.push({
+        name: ClassJobCategory.Name,
+        style: 'full',
+        titleClass: 'ck-success',
+      })
+      ac.attrs.push({
+        name: `${LevelEquip}级以上`,
+        style: 'full',
+        titleClass: 'ck-success',
+      })
     }
 
     if (Description) {
-      ac.attrs.push({ name: Description.replace(/\n+/g, '\n'), style: 'full', titleClass: '' })
+      ac.attrs.push({
+        name: Description.replace(/\n+/g, '\n'),
+        style: 'full',
+        titleClass: '',
+      })
     }
 
     // 特殊 - 装备
     if (BaseParam0) {
       ac.attrs.push({ name: '特殊', style: 'header' })
 
-      const list = []
+      const list: Array<ICKAttribute & { id: number }> = []
       for (let i = 0; i <= 5; i++) {
         const key = `BaseParam${i}`
         const valueKey = `BaseParamValue${i}`
@@ -326,10 +339,15 @@ export class CKItem extends Component<ICKItemProps, ICKItemState> {
           }
         }
 
-        list.push({ name: this.state.item[key].Name, value: '+' + value, style: 'half', id })
+        list.push({
+          name: this.state.item[key].Name,
+          value: `+${value}`,
+          style: 'half',
+          id,
+        })
       }
 
-      list.sort((x, y) => x.id - y.id).forEach(x => ac.attrs.push(x))
+      ac.attrs.push(...list.sort((x, y) => x.id - y.id))
     }
 
     // 特殊 - 食物
@@ -338,12 +356,20 @@ export class CKItem extends Component<ICKItemProps, ICKItemState> {
       if (hq) {
         for (const key in Bonuses) {
           const b = Bonuses[key]
-          ac.attrs.push({ name: key, value: `+${b.ValueHQ}%（上限 ${b.MaxHQ}）`, style: 'half-full' })
+          ac.attrs.push({
+            name: key,
+            value: `+${b.ValueHQ}%（上限 ${b.MaxHQ}）`,
+            style: 'half-full',
+          })
         }
       } else {
         for (const key in Bonuses) {
           const b = Bonuses[key]
-          ac.attrs.push({ name: key, value: `+${b.Value}%（上限 ${b.Max}）`, style: 'half-full' })
+          ac.attrs.push({
+            name: key,
+            value: `+${b.Value}%（上限 ${b.Max}）`,
+            style: 'half-full',
+          })
         }
       }
     }
@@ -351,8 +377,16 @@ export class CKItem extends Component<ICKItemProps, ICKItemState> {
     // 魔晶石工艺
     if (MateriaSlotCount) {
       ac.attrs.push({ name: '魔晶石工艺', style: 'header' })
-      ac.attrs.push({ name: '安全孔数', value: MateriaSlotCount, style: 'half' })
-      ac.attrs.push({ name: '禁断镶嵌', value: boolToString(IsAdvancedMeldingPermitted), style: 'half' })
+      ac.attrs.push({
+        name: '安全孔数',
+        value: MateriaSlotCount,
+        style: 'half',
+      })
+      ac.attrs.push({
+        name: '禁断镶嵌',
+        value: boolToString(IsAdvancedMeldingPermitted),
+        style: 'half',
+      })
     }
 
     // 制作&修理
@@ -362,11 +396,23 @@ export class CKItem extends Component<ICKItemProps, ICKItemState> {
       const levelMeld = LevelEquip
       const levelRepair = Math.max(LevelEquip - 10, 1)
 
-      ac.attrs.push({ name: '修理等级', value: `${ClassJobRepair.Name} ${levelRepair}级以上`, style: 'full' })
-      ac.attrs.push({ name: '修理材料', value: ItemRepair.Item?.Name || ItemRepair.Name, style: 'full' })
+      ac.attrs.push({
+        name: '修理等级',
+        value: `${ClassJobRepair.Name} ${levelRepair}级以上`,
+        style: 'full',
+      })
+      ac.attrs.push({
+        name: '修理材料',
+        value: ItemRepair.Item?.Name || ItemRepair.Name,
+        style: 'full',
+      })
 
       if (MateriaSlotCount) {
-        ac.attrs.push({ name: '镶嵌魔晶石等级', value: `${ClassJobRepair.Name} ${levelMeld}级以上`, style: 'full' })
+        ac.attrs.push({
+          name: '镶嵌魔晶石等级',
+          value: `${ClassJobRepair.Name} ${levelMeld}级以上`,
+          style: 'full',
+        })
       }
     }
 
@@ -391,13 +437,25 @@ export class CKItem extends Component<ICKItemProps, ICKItemState> {
       ac.attrs.push({ name: '', style: 'header' })
 
       if (PriceLow <= 0) {
-        ac.attrs.push({ name: '不可出售', style: 'half', titleClass: 'ck-warning' })
+        ac.attrs.push({
+          name: '不可出售',
+          style: 'half',
+          titleClass: 'ck-warning',
+        })
       }
       if (IsUntradable) {
-        ac.attrs.push({ name: '不可在市场出售', style: 'half', titleClass: 'ck-warning' })
+        ac.attrs.push({
+          name: '不可在市场出售',
+          style: 'half',
+          titleClass: 'ck-warning',
+        })
       }
       if (IsUnique) {
-        ac.attrs.push({ name: '只能持有一个', style: 'half', titleClass: 'ck-warning' })
+        ac.attrs.push({
+          name: '只能持有一个',
+          style: 'half',
+          titleClass: 'ck-warning',
+        })
       }
     }
 
@@ -415,7 +473,12 @@ export class CKItem extends Component<ICKItemProps, ICKItemState> {
           <CKContainer style={{ paddingBottom: 0 }}>{elItemName}</CKContainer>
           {children}
           <CKContainer style={{ display: 'flex' }}>
-            <button onClick={this.handleCopy} style={{ flex: 1 }} disabled={!!this.state.copyMessage}>
+            <button
+              type="button"
+              onClick={this.handleCopy}
+              style={{ flex: 1 }}
+              disabled={!!this.state.copyMessage}
+            >
               {this.state.copyMessage || '复制道具名'}
             </button>
             <span style={{ width: 8 }} />
@@ -424,10 +487,23 @@ export class CKItem extends Component<ICKItemProps, ICKItemState> {
             </button>
           </CKContainer>
           <CKComment>
-            <p style={{ fontSize: '9px', textAlign: 'right', opacity: 0.6, userSelect: 'none' }}>
-              {this.context.hideSeCopyright ? null : `© ${year} SQUARE ENIX CO., LTD. `}
+            <p
+              style={{
+                fontSize: '9px',
+                textAlign: 'right',
+                opacity: 0.6,
+                userSelect: 'none',
+              }}
+            >
+              {this.context.hideSeCopyright
+                ? null
+                : `© ${year} SQUARE ENIX CO., LTD. `}
               Powered by{' '}
-              <a href="https://ffcafe.org/?utm_source=ckitem" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://ffcafe.org/?utm_source=ckitem"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 FFCafe
               </a>
             </p>

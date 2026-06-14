@@ -1,9 +1,7 @@
-import { ICKContext } from './CKContextProvider'
-import { isSupportPassive } from './utils/isSupportPassive'
+import type { ICKContext } from './CKContextProvider'
+import { hidePopup, popupAction, popupItem } from './popup'
 import { closest } from './utils/closest'
-import { parents } from './utils/parents'
-import { popupItem, popupAction, hidePopup } from './popup'
-import { ICKItemProps } from './CKItem'
+import { isSupportPassive } from './utils/isSupportPassive'
 
 export interface ITooltipOptions {
   context: ICKContext
@@ -53,7 +51,11 @@ export function initTooltip(opts: Partial<ITooltipOptions> = {}) {
   }
 
   const handler = getMouseOverHandler(options)
-  options.links.rootContainer.addEventListener('mouseover', handler, listenOptions)
+  options.links.rootContainer.addEventListener(
+    'mouseover',
+    handler,
+    listenOptions,
+  )
 }
 
 interface IRenderProps {
@@ -61,9 +63,11 @@ interface IRenderProps {
   element: HTMLElement
 }
 
-function getMouseOverHandler(options: ITooltipOptions): EventListenerOrEventListenerObject {
-  return event => {
-    let props: IRenderProps
+function getMouseOverHandler(
+  options: ITooltipOptions,
+): EventListenerOrEventListenerObject {
+  return (event) => {
+    let props: IRenderProps | null = null
     let type = 'item'
 
     if (options.links.itemIdAttribute || options.links.itemNameAttribute) {
@@ -93,7 +97,11 @@ function getMouseOverHandler(options: ITooltipOptions): EventListenerOrEventList
           props.element.removeEventListener('mouseleave', leaveHandler)
           removeFlag(props.element, 'leave')
         }
-        props.element.addEventListener('mouseleave', leaveHandler, listenOptions)
+        props.element.addEventListener(
+          'mouseleave',
+          leaveHandler,
+          listenOptions,
+        )
         addFlag(props.element, 'leave')
       }
     }
@@ -101,18 +109,18 @@ function getMouseOverHandler(options: ITooltipOptions): EventListenerOrEventList
 }
 
 function addFlag(f: any, flag: string) {
-  f['__ckflag_' + flag] = true
+  f[`__ckflag_${flag}`] = true
 }
 
 function removeFlag(f: any, flag: string) {
-  delete f['__ckflag_' + flag]
+  delete f[`__ckflag_${flag}`]
 }
 
 function hasFlag(f: any, flag: string) {
-  return f['__ckflag_' + flag] === true
+  return f[`__ckflag_${flag}`] === true
 }
 
-function handleWiki(el: HTMLElement): IRenderProps {
+function handleWiki(el: HTMLElement): IRenderProps | null {
   const a = closest(el, 'a') as HTMLAnchorElement
   if (!a) {
     return null
@@ -140,7 +148,7 @@ function handleWiki(el: HTMLElement): IRenderProps {
   }
 }
 
-function parseBool(v: string): boolean |null {
+function parseBool(v: string | null): boolean | null {
   if (!v) {
     return null
   }
@@ -152,21 +160,29 @@ function parseBool(v: string): boolean |null {
   return null
 }
 
-function handleAttrItem(el: HTMLElement, options: ITooltipOptions): IRenderProps {
+function handleAttrItem(
+  el: HTMLElement,
+  options: ITooltipOptions,
+): IRenderProps | null {
   const itemNameDom = closest(el, `[${options.links.itemNameAttribute}]`)
   const itemIdDom = closest(el, `[${options.links.itemIdAttribute}]`)
 
   if (itemIdDom) {
     const hq = itemIdDom.getAttribute(options.links.itemHqAttribute)
     return {
-      props: { id: itemIdDom.getAttribute(options.links.itemIdAttribute), hq: parseBool(hq) },
+      props: {
+        id: itemIdDom.getAttribute(options.links.itemIdAttribute),
+        hq: parseBool(hq),
+      },
       element: itemIdDom,
     }
   }
 
   if (itemNameDom) {
     const hq = itemNameDom.getAttribute(options.links.itemHqAttribute)
-    const name = itemNameDom.getAttribute(options.links.itemNameAttribute) || itemNameDom.innerText.trim()
+    const name =
+      itemNameDom.getAttribute(options.links.itemNameAttribute) ||
+      itemNameDom.innerText.trim()
 
     return {
       props: { name, hq: parseBool(hq) },
@@ -177,7 +193,10 @@ function handleAttrItem(el: HTMLElement, options: ITooltipOptions): IRenderProps
   return null
 }
 
-function handleAttrAction(el: HTMLElement, options: ITooltipOptions): IRenderProps {
+function handleAttrAction(
+  el: HTMLElement,
+  options: ITooltipOptions,
+): IRenderProps | null {
   const actionNameDom = closest(el, `[${options.links.actionNameAttribute}]`)
   const actionIdDom = closest(el, `[${options.links.actionIdAttribute}]`)
 
@@ -189,8 +208,11 @@ function handleAttrAction(el: HTMLElement, options: ITooltipOptions): IRenderPro
   }
 
   if (actionNameDom) {
-    const job = actionNameDom.getAttribute(options.links.actionJobIdAttribute) || null
-    const name = actionNameDom.getAttribute(options.links.actionNameAttribute) || actionNameDom.innerText.trim()
+    const job =
+      actionNameDom.getAttribute(options.links.actionJobIdAttribute) || null
+    const name =
+      actionNameDom.getAttribute(options.links.actionNameAttribute) ||
+      actionNameDom.innerText.trim()
 
     return {
       props: { name, jobId: job },

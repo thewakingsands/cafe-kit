@@ -5,7 +5,10 @@ export function isSupportPassive() {
     return passiveCache
   }
 
-  if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.addEventListener === 'function'
+  ) {
     let passive = false
     const options = Object.defineProperty({}, 'passive', {
       get() {

@@ -15,7 +15,14 @@
   </style>
   <div id="ckbox" class="cafekit example"></div>
   <div id="ckbox2" class="cafekit example"></div>
-  <script src="../dist/bundle.js"></script>
-  <script src="./index.js"></script>
+  <script>
+    (async () => {
+      window.CafeKitCommon = await import('./lib/main.ts')
+
+      const script = document.createElement('script')
+      script.src = './example/index.js'
+      document.body.appendChild(script)
+    })()
+  </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-import { h, Component } from 'preact'
+import { Component } from 'preact'
 import { CKActionIcon } from './CKActionIcon'
 
 export interface ICKItemNameProps {
@@ -13,7 +13,10 @@ export interface ICKItemNameProps {
 export class CKItemName extends Component<ICKItemNameProps> {
   public render() {
     return (
-      <div class={'ck-item-name ck-item-name-size-' + this.props.size} style={this.props.style}>
+      <div
+        class={`ck-item-name ck-item-name-size-${this.props.size}`}
+        style={this.props.style}
+      >
         {this.props.iconSrc ? (
           <div className="ck-item-name-icon">
             <CKActionIcon src={this.props.iconSrc} size="" />
@@ -21,8 +24,12 @@ export class CKItemName extends Component<ICKItemNameProps> {
         ) : null}
 
         <div className="ck-item-name-meta">
-          <div class={'ck-item-name-name ck-rarity-' + this.props.rarity}>{this.props.name}</div>
-          {this.props.type ? <div class="ck-item-name-type">{this.props.type}</div> : null}
+          <div class={`ck-item-name-name ck-rarity-${this.props.rarity}`}>
+            {this.props.name}
+          </div>
+          {this.props.type ? (
+            <div class="ck-item-name-type">{this.props.type}</div>
+          ) : null}
         </div>
       </div>
     )

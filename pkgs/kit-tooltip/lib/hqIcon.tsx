@@ -1,7 +1,12 @@
-import { h } from 'preact'
-
 export const hqSvg = (
-  <svg width="12" height="12" viewBox="0 0 64 67" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    width="12"
+    height="12"
+    viewBox="0 0 64 67"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <title>HQ</title>
     <path
       fill-rule="evenodd"
       clip-rule="evenodd"

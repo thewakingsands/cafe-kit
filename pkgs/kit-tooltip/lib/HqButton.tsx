@@ -1,4 +1,4 @@
-import { h, Component } from 'preact'
+import { Component } from 'preact'
 import { hqSvg } from './hqIcon'
 
 export interface IHqButtonProps {
@@ -18,7 +18,11 @@ export class HqButton extends Component<IHqButtonProps> {
     }
 
     return (
-      <span style={style} onClick={this.handleHqClick} onMouseDown={this.preventSelectText}>
+      <span
+        style={style}
+        onClick={this.handleHqClick}
+        onMouseDown={this.preventSelectText}
+      >
         {' '}
         {hqSvg}
       </span>

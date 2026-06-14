@@ -1,7 +1,5 @@
-export { CKItem } from './CKItem'
+export { h, render } from 'preact'
+export { initTooltip } from './auto'
 export { CKAction } from './CKAction'
 export { CKContextProvider } from './CKContextProvider'
-
-export { initTooltip } from './auto'
-
-export { render, h } from 'preact'
+export { CKItem } from './CKItem'

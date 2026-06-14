@@ -7,9 +7,11 @@ allowBuilds:
 
 catalog:
   "@biomejs/biome": 2.5.0
+  "@preact/preset-vite": ^2.10.5
   "@tsconfig/node24": ^24.0.0
   "@types/node": ^24.0.0
   preact: ^10.29.2
+  stylus: ^0.64.0
   tsdown: ^0.22.2
   tsx: ^4.22.4
   typescript: ^6.0.3

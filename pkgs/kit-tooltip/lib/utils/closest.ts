@@ -1,14 +1,17 @@
-export function closest(parent: HTMLElement, selector: string | HTMLElement): HTMLElement {
+export function closest(
+  parent: HTMLElement,
+  selector: string | HTMLElement,
+): HTMLElement | null {
   if (typeof selector === 'string') {
     try {
       document.createElement('div').querySelector(selector)
-    } catch (e) {
+    } catch {
       // invalid selector
       return null
     }
   }
 
-  let node: HTMLElement = parent
+  let node: HTMLElement | null = parent
 
   do {
     if (selector instanceof HTMLElement) {

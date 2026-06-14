@@ -15,7 +15,14 @@
   <div>
     <div class="cafekit" id="container1" style="display: flex; flex-direction: row; flex-wrap: wrap;"></div>
   </div>
-  <script src="../dist/bundle.js"></script>
-  <script src="./index.js"></script>
+  <script>
+    (async () => {
+      window.CafeKitTooltip = await import('./lib/main.ts')
+
+      const script = document.createElement('script')
+      script.src = './example/index.js'
+      document.body.appendChild(script)
+    })()
+  </script>
 </body>
 </html>
