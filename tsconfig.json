@@ -2,6 +2,6 @@
   "extends": "@tsconfig/node24/tsconfig.json",
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
-    "lib": ["dom"]
+    "lib": ["dom", "ESNext"]
   }
 }
