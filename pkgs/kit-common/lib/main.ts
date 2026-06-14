@@ -1,5 +1,6 @@
 // tslint:disable-next-line: no-var-requires
-require('./styles/main.styl') // use require here to avoid types being created
+import './styles/main.styl'
+
 
 export { CKBox } from './CKBox'
 export { CKBoxBottom } from './CKBoxBottom'

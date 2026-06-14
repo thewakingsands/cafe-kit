@@ -2,16 +2,23 @@
   "name": "@thewakingsands/kit-common",
   "version": "0.3.0",
   "main": "dist/bundle.js",
+  "types": "dist/lib/main.d.ts",
   "dependencies": {
-    "preact": "^8.4.2"
+    "preact": "catalog:"
+  },
+  "devDependencies": {
+    "unplugin-dts": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-css-injected-by-js": "catalog:"
   },
   "scripts": {
-    "dev": "webpack-dev-server",
-    "build": "webpack",
-    "preversion": "NODE_ENV=production webpack"
+    "dev": "vite --host 0.0.0.0 --port 8004",
+    "build": "vite build",
+    "preversion": "vite build"
   },
   "files": [
-    "dist"
+    "dist",
+    "example"
   ],
   "license": "AGPL-3.0",
   "browserslist": {
@@ -25,9 +32,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "copy-webpack-plugin": "^5.0.4"
   },
   "publishConfig": {
     "access": "public"

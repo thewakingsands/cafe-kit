@@ -148,10 +148,10 @@ CafeKitTooltip.initTooltip({
           .replace(/'/g, "&#039;")
     }
 
-    document.querySelectorAll('textarea[lang]').forEach(function (block) {
-      var lang = block.getAttribute('lang')
-      var codeEl = document.createElement('code')
-      var preEl = document.createElement('pre')
+    document.querySelectorAll('textarea[lang]').forEach((block) => {
+      const lang = block.getAttribute('lang')
+      const codeEl = document.createElement('code')
+      const preEl = document.createElement('pre')
       preEl.className = lang
       preEl.appendChild(codeEl)
       codeEl.innerHTML = escapeHtml(block.value.trim())
@@ -160,7 +160,7 @@ CafeKitTooltip.initTooltip({
       block.parentElement.insertBefore(preEl, block)
 
       if (!block.hasAttribute('no-preview') && lang === 'html') {
-        var liveEl = document.createElement('p')
+        const liveEl = document.createElement('p')
         liveEl.className = "example-live"
         liveEl.innerHTML = block.value.trim()
         block.parentElement.insertBefore(liveEl, block)
@@ -169,7 +169,7 @@ CafeKitTooltip.initTooltip({
       block.parentElement.removeChild(block)
     })
   </script>
-  <script src="../bundle.js"></script>
+  <script src="../dist/bundle.js"></script>
   <script>
     CafeKitTooltip.initTooltip()
   </script>
