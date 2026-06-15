@@ -1,7 +1,11 @@
 import type { Models, Options } from '../types/index.js'
 import { CustomError, request } from '../utils.js'
 
-export class Sheet<T extends Models.SchemaSpecifier> {
+export class Sheet<
+  T extends Models.SchemaSpecifier,
+  Fields = object,
+  Transient = object,
+> {
   private readonly type: T
   private readonly options: Options
 
@@ -20,7 +24,7 @@ export class Sheet<T extends Models.SchemaSpecifier> {
   public get(
     id: string | number,
     params: Models.RowReaderQuery = {},
-  ): Promise<Models.RowResponse> {
+  ): Promise<Models.RowResponse<Fields, Transient>> {
     try {
       if (typeof id !== 'string') id = id.toString()
       return new Sheets(this.options).get(this.type, id, params)
@@ -37,7 +41,9 @@ export class Sheet<T extends Models.SchemaSpecifier> {
    * @returns {Promise<Models.SheetResponse>} A list of rows with typed fields.
    * @see https://v2.xivapi.com/api/docs#tag/sheets/get/sheet/{sheet}
    */
-  public list(params: Models.SheetQuery = {}): Promise<Models.SheetResponse> {
+  public list(
+    params: Models.SheetQuery = {},
+  ): Promise<Models.SheetResponse<Fields, Transient>> {
     try {
       return new Sheets(this.options).list(this.type, params)
     } catch (error) {
@@ -87,17 +93,17 @@ export class Sheets {
    * @returns {Promise<Models.SheetResponse>} A list of rows with typed fields.
    * @see https://v2.xivapi.com/api/docs#tag/sheets/get/sheet/{sheet}
    */
-  async list(
+  async list<Fields = object, Transient = object>(
     sheet: Models.SchemaSpecifier,
     params: Models.SheetQuery = {},
-  ): Promise<Models.SheetResponse> {
+  ): Promise<Models.SheetResponse<Fields, Transient>> {
     const { data, errors } = await request({
       path: `/sheet/${sheet}`,
       params: params as Record<string, unknown>,
       options: this.options,
     })
     if (errors) throw new CustomError(errors[0].message)
-    return data as Models.SheetResponse
+    return data as Models.SheetResponse<Fields, Transient>
   }
 
   /**
@@ -107,17 +113,17 @@ export class Sheets {
    * @returns {Promise<Models.RowResponse>} A list of rows with typed fields.
    * @see https://v2.xivapi.com/api/docs#tag/sheets/get/sheet/{sheet}/{id}
    */
-  async get(
+  async get<Fields = object, Transient = object>(
     sheet: Models.SchemaSpecifier,
     row: Models.RowSpecifier,
     params: Models.RowReaderQuery = {},
-  ): Promise<Models.RowResponse> {
+  ): Promise<Models.RowResponse<Fields, Transient>> {
     const { data, errors } = await request({
       path: `/sheet/${sheet}/${row}`,
       params: params as Record<string, unknown>,
       options: this.options,
     })
     if (errors) throw new CustomError(errors[0].message)
-    return data as Models.RowResponse
+    return data as Models.RowResponse<Fields, Transient>
   }
 }

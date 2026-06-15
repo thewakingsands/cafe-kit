@@ -146,22 +146,38 @@ export type FilterString = string | string[]
  * Response structure for the search endpoint.
  * @see https://v2.xivapi.com/api/docs#model/searchresponse
  */
-export interface SearchResponse {
-  results: SearchResult[]
+export interface SearchResponse<Fields, Transient> {
+  results: SearchResult<Fields, Transient>[]
   schema: SchemaSpecifier
   next?: string | null
+}
+
+/**
+ * Row retrieved by the query.
+ * @see https://v2.xivapi.com/api/docs#model/rowresult
+ */
+export interface RowResult<Fields, Transient> {
+  fields: Fields
+  /**
+   * ID of this row.
+   */
+  row_id: number
+  /**
+   * Subrow ID of this row, when relevant.
+   */
+  subrow_id?: number | null
+  /**
+   * Field values for this row's transient row, if any is present, according to the current schema and transient filter.
+   */
+  transient?: Transient
 }
 
 /**
  * Result found by a search query, hydrated with data from the underlying excel row the result represents.
  * @see https://v2.xivapi.com/api/docs#model/searchresult
  */
-export interface SearchResult {
-  fields: object
-  /**
-   * ID of this row.
-   */
-  row_id: number
+export interface SearchResult<Fields, Transient>
+  extends RowResult<Fields, Transient> {
   /**
    * Relevance score for this entry.
    * These values only loosely represent the relevance of an entry to the search query. No guarantee is given that the discrete values, nor resulting sort order, will remain stable.
@@ -171,14 +187,6 @@ export interface SearchResult {
    * Excel sheet this result was found in.
    */
   sheet: SchemaSpecifier
-  /**
-   * Subrow ID of this row, when relevant.
-   */
-  subrow_id?: number
-  /**
-   * Field values for this row's transient row, if any is present, according to the current schema and transient filter.
-   */
-  transient?: object
 }
 
 /**
@@ -243,36 +251,16 @@ export type RowSpecifier = string // `^\d+(:\d+)?$`
  * Response structure for the sheet endpoint.
  * @see https://v2.xivapi.com/api/docs#model/sheetresponse
  */
-export interface SheetResponse {
+export interface SheetResponse<Fields, Transient> {
   /**
    * Array of rows retrieved by the query.
    * @see https://v2.xivapi.com/api/docs#model/rowresult
    */
-  rows: RowResult[]
+  rows: RowResult<Fields, Transient>[]
   /**
    * The canonical specifier for the schema used in this response.
    */
   schema: SchemaSpecifier
-}
-
-/**
- * Row retrieved by the query.
- * @see https://v2.xivapi.com/api/docs#model/rowresult
- */
-export interface RowResult {
-  fields: object
-  /**
-   * ID of this row.
-   */
-  row_id: number
-  /**
-   * Subrow ID of this row, when relevant.
-   */
-  subrow_id?: number | null
-  /**
-   * Field values for this row's transient row, if any is present, according to the current schema and transient filter.
-   */
-  transient?: object
 }
 
 /**
@@ -291,24 +279,12 @@ export interface RowPath {
  * Response structure for the row endpoint.
  * @see https://v2.xivapi.com/api/docs#model/rowresponse
  */
-export interface RowResponse {
-  fields: object
-  /**
-   * ID of this row.
-   */
-  row_id: number
+export interface RowResponse<Fields, Transient>
+  extends RowResult<Fields, Transient> {
   /**
    * The canonical specifier for the schema used in this response.
    */
   schema: SchemaSpecifier
-  /**
-   * Subrow ID of this row, when relevant.
-   */
-  subrow_id?: number | null
-  /**
-   * Field values for this row's transient row, if any is present, according to the current schema and transient filter.
-   */
-  transient?: object
 }
 
 /**
@@ -332,4 +308,19 @@ export interface VersionMetadata {
    * Names associated with this version. Version names specified here are accepted by the `version` query parameter throughout the API.
    */
   names: string[]
+}
+
+export interface RowReference<Fields, Transient = object>
+  extends RowResult<Fields, Transient> {
+  value: number
+  /**
+   * Name of the sheet to read.
+   */
+  sheet: SchemaSpecifier
+}
+
+export interface Icon {
+  id: number
+  path: string
+  path_hr1?: string
 }

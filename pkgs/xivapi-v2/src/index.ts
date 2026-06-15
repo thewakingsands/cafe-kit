@@ -3,6 +3,7 @@ import { Sheet, Sheets } from './lib/sheets.js'
 import type { Models, Options, SearchParams } from './types/index.js'
 import { CustomError, request } from './utils.js'
 
+export * from './types/index.js'
 export { formatIconUrl }
 
 export default class XIVAPI {
@@ -59,13 +60,15 @@ export default class XIVAPI {
    * @see https://v2.xivapi.com/api/docs#tag/search/get/search
    * @since 0.5.0
    */
-  public async search(params: SearchParams): Promise<Models.SearchResponse> {
+  public async search<Fields = object, Transient = object>(
+    params: SearchParams,
+  ): Promise<Models.SearchResponse<Fields, Transient>> {
     const { data, errors } = await request({
       path: '/search',
       params: params as Record<string, unknown>,
     })
     if (errors) throw new CustomError(errors[0].message)
-    return data as Models.SearchResponse
+    return data as Models.SearchResponse<Fields, Transient>
   }
 
   /**
