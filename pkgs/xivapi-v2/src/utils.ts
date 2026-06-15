@@ -6,7 +6,6 @@ export const apiEndpoint = `${endpoint}/api/`
 export class CustomError extends Error {
   constructor(message: string, name: string | null = null) {
     super()
-    Error.captureStackTrace(this, this.constructor)
     this.name = name || 'XIVAPIError'
     this.message = message
   }
@@ -67,7 +66,7 @@ export const request = async (
     if (contentType?.includes('application/json')) {
       payload.data = await response.json()
     } else {
-      payload.data = Buffer.from(await response.arrayBuffer())
+      payload.data = await response.arrayBuffer()
     }
   } else {
     payload.errors = [(await response.json()) as Models.ErrorResponse]

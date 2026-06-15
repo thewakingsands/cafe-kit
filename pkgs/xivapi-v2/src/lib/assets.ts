@@ -9,16 +9,16 @@ export class Assets {
   /**
    * Read an asset from the game at the specified path, converting it into a usable format. If no valid conversion between the game file type and specified format exists, an error will be returned.
    * @param {Models.AssetQuery} params Query parameters accepted by the asset endpoint.
-   * @returns {Promise<Buffer>} An image of the asset.
+   * @returns {Promise<ArrayBuffer>} An image of the asset.
    * @see https://v2.xivapi.com/api/docs#tag/assets/get/asset
    */
-  async get(params: Models.AssetQuery): Promise<Buffer> {
+  async get(params: Models.AssetQuery): Promise<ArrayBuffer> {
     const { data, errors } = await request({
       path: '/asset',
       params: params as unknown as Record<string, unknown>,
     })
     if (errors) throw new CustomError(errors[0].message)
-    return data as Buffer
+    return data as ArrayBuffer
   }
 }
 
