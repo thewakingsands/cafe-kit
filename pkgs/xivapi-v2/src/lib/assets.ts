@@ -22,7 +22,8 @@ export class Assets {
   }
 }
 
-export const formatIconUrl = (path: string) => {
+export const formatIconUrl = (input: string | Models.Icon) => {
+  const path = typeof input === 'string' ? input : input.path_hr1 || input.path
   if (path.startsWith('/i/')) {
     return `${endpoint}${path}`
   }
