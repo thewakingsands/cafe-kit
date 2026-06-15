@@ -1,0 +1,99 @@
+name: Publish npm packages
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: npm dist-tag to publish with
+        required: true
+        default: beta
+        type: choice
+        options:
+          - beta
+          - latest
+      version_strategy:
+        description: Use package.json versions, or create temporary prerelease versions for this run
+        required: true
+        default: prerelease
+        type: choice
+        options:
+          - prerelease
+          - package-json
+      preid:
+        description: Prerelease identifier used when version_strategy is prerelease
+        required: true
+        default: beta
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Publish packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - name: Resolve publish options
+        id: options
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
+              echo "tag=beta" >> "$GITHUB_OUTPUT"
+            else
+              echo "tag=latest" >> "$GITHUB_OUTPUT"
+            fi
+            echo "version-strategy=package-json" >> "$GITHUB_OUTPUT"
+            echo "preid=beta" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ inputs.channel }}" >> "$GITHUB_OUTPUT"
+            echo "version-strategy=${{ inputs.version_strategy }}" >> "$GITHUB_OUTPUT"
+            echo "preid=${{ inputs.preid }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Apply temporary prerelease versions
+        if: steps.options.outputs.version-strategy == 'prerelease'
+        run: pnpm -r --filter "./pkgs/*" exec npm version prerelease --preid "${{ steps.options.outputs.preid }}" --no-git-tag-version
+
+      - name: Validate beta versions
+        if: steps.options.outputs.tag == 'beta'
+        run: pnpm -r --filter "./pkgs/*" exec node -e 'const p = require("./package.json"); if (!p.private && !p.version.includes("-")) { console.error(`${p.name}@${p.version} is not a prerelease version. Use version_strategy=prerelease or update package.json before publishing with the beta tag.`); process.exit(1); }'
+
+      - name: Validate latest versions
+        if: steps.options.outputs.tag == 'latest'
+        run: pnpm -r --filter "./pkgs/*" exec node -e 'const p = require("./package.json"); if (!p.private && p.version.includes("-")) { console.error(`${p.name}@${p.version} is a prerelease version and cannot be published with the latest tag.`); process.exit(1); }'
+
+      - name: Build packages
+        run: pnpm -r build
+
+      - name: Show packages to publish
+        run: pnpm -r --filter "./pkgs/*" exec node -e 'const p = require("./package.json"); if (!p.private) console.log(`${p.name}@${p.version}`)'
+
+      - name: Publish packages
+        run: pnpm -r --filter "./pkgs/*" publish --access public --tag "${{ steps.options.outputs.tag }}" --no-git-checks --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
