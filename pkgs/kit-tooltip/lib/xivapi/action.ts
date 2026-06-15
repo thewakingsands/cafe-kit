@@ -16,7 +16,7 @@ export interface ActionData {
 }
 
 export interface ActionTransient {
-  Description: string
+  'Description@as(html)': string
 }
 
 export type ActionRow = Models.RowResponse<ActionData, ActionTransient>
@@ -24,7 +24,6 @@ export type ActionRow = Models.RowResponse<ActionData, ActionTransient>
 const actionColumns = [
   'Icon',
   'Name',
-  'Description',
   'ActionCategory.Name',
   'ClassJob.Name',
   'ClassJobCategory.Name',
@@ -44,5 +43,6 @@ export async function queryAction(
     .sheets()
     .get<ActionData, ActionTransient>('Action', actionId.toString(), {
       fields: actionColumns,
+      transient: ['Description@as(html)'],
     })
 }

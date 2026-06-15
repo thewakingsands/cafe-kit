@@ -43,7 +43,7 @@ function CKActionInner({ data }: { data: ActionRow }) {
       ClassJobLevel,
       EffectRange,
     },
-    transient: { Description } = {},
+    transient: { 'Description@as(html)': Description } = {},
   } = data
   const { hideSeCopyright } = useContext(CKContext)
 
@@ -67,7 +67,13 @@ function CKActionInner({ data }: { data: ActionRow }) {
   const api = useXIVAPI()
   const iconUrl = api.formatIconUrl(Icon)
 
-  const descEl = <div style={{ whiteSpace: 'pre-wrap' }}>{Description}</div>
+  const descEl = Description ? (
+    <div
+      dangerouslySetInnerHTML={{
+        __html: Description,
+      }}
+    />
+  ) : null
 
   const year = new Date().getFullYear()
 
