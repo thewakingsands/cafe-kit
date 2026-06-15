@@ -10,6 +10,9 @@
   },
   "description": "A Node.JS wrapper for xivapi.com",
   "license": "MIT",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsdown src/index.ts --dts",
     "test": "echo \"Error: no test specified\" && exit 1"
