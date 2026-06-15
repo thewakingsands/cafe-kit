@@ -59,6 +59,9 @@ jobs:
           registry-url: https://registry.npmjs.org
           cache: pnpm
 
+      - name: Set up npm for trusted publishing
+        run: npm install -g npm@latest
+
       - name: Resolve publish options
         id: options
         shell: bash
@@ -177,8 +180,13 @@ jobs:
         if: steps.unpublished.outputs.packages != ''
         shell: bash
         run: |
+          pack_dir="$RUNNER_TEMP/npm-packages"
+          mkdir -p "$pack_dir"
+
           for package in ${{ steps.unpublished.outputs.packages }}; do
-            pnpm --filter "$package" publish --access public --tag "${{ steps.options.outputs.tag }}" --no-git-checks --provenance
+            pnpm --filter "$package" pack --pack-destination "$pack_dir"
           done
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+          for tarball in "$pack_dir"/*.tgz; do
+            npm publish "$tarball" --access public --tag "${{ steps.options.outputs.tag }}" --provenance
+          done
