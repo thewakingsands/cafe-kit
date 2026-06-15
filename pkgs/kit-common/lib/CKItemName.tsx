@@ -1,7 +1,8 @@
+import type { VNode } from 'preact'
 import { CKActionIcon } from './CKActionIcon'
 
 export interface ICKItemNameProps {
-  name: string
+  name: string | VNode
   rarity: number
   iconSrc?: string
   type?: string

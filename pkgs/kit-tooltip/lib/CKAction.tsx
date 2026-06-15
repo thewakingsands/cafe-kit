@@ -8,9 +8,11 @@ import {
   CKStatGroup,
   type ICKAttributesProps,
 } from '@thewakingsands/kit-common'
+import type XIVAPI from '@thewakingsands/xivapi-v2'
 import { useContext, useEffect, useRef, useState } from 'preact/hooks'
-import { CKContext, type ICKContext } from './CKContextProvider'
-import { createXivApi, findXivRowId, normalizeActionRow } from './xivapi'
+import { CKContext, useXIVAPI } from './CKContextProvider'
+import { type ActionRow, queryAction } from './xivapi/action'
+import { findXivRowId } from './xivapi/common'
 
 export interface ICKActionProps {
   name?: string
@@ -20,20 +22,28 @@ export interface ICKActionProps {
   onUpdate?: () => void
 }
 
-function CKActionInner({ data }: { data: any }) {
+function CKActionInner({ data }: { data: ActionRow }) {
   const {
-    Icon,
-    Name,
-    Description,
-    ActionCategory: { Name: ActionCategoryName },
-    ClassJob: { Name: ClassJobName },
-    ClassJobCategory: { Name: ClassJobCategoryName },
-    MaxCharges,
-    Range,
-    Cast100ms,
-    Recast100ms,
-    ClassJobLevel,
-    EffectRange,
+    fields: {
+      Icon,
+      Name,
+      ActionCategory: {
+        fields: { Name: ActionCategoryName },
+      },
+      ClassJob: {
+        fields: { Name: ClassJobName },
+      },
+      ClassJobCategory: {
+        fields: { Name: ClassJobCategoryName },
+      },
+      MaxCharges,
+      Range,
+      Cast100ms,
+      Recast100ms,
+      ClassJobLevel,
+      EffectRange,
+    },
+    transient: { Description } = {},
   } = data
   const { hideSeCopyright } = useContext(CKContext)
 
@@ -54,16 +64,10 @@ function CKActionInner({ data }: { data: any }) {
     ac.attrs.push({ name: '充能层数', value: MaxCharges, style: 'half-full' })
   }
 
-  const iconUrl = Icon
+  const api = useXIVAPI()
+  const iconUrl = api.formatIconUrl(Icon)
 
-  // eslint-disable-next-line react/no-danger
-  const descEl = (
-    <div
-      dangerouslySetInnerHTML={{
-        __html: Description.replace(/\n/g, '<br/>'),
-      }}
-    />
-  )
+  const descEl = <div style={{ whiteSpace: 'pre-wrap' }}>{Description}</div>
 
   const year = new Date().getFullYear()
 
@@ -115,7 +119,7 @@ function CKActionInner({ data }: { data: any }) {
 }
 
 export function CKAction(props: ICKActionProps) {
-  const context = useContext(CKContext)
+  const api = useXIVAPI()
   const [data, setData] = useState<any>(null)
   const [error, setError] = useState<any>(null)
   const didMountRef = useRef(false)
@@ -134,7 +138,7 @@ export function CKAction(props: ICKActionProps) {
     setData(null)
     setError(null)
 
-    getActionData(props, context)
+    getActionData(api, props)
       .then((data) => {
         if (!ignore && data) {
           setData(data)
@@ -150,7 +154,7 @@ export function CKAction(props: ICKActionProps) {
     return () => {
       ignore = true
     }
-  }, [props.id, props.name, props.jobId, props.pvp, context])
+  }, [props.id, props.name, props.jobId, props.pvp])
 
   if (error) {
     return (
@@ -171,22 +175,16 @@ export function CKAction(props: ICKActionProps) {
   return <CKActionInner data={data} />
 }
 
-async function getActionData(props: ICKActionProps, context: ICKContext) {
-  const id = await getActionId(props, context)
+async function getActionData(api: XIVAPI, props: ICKActionProps) {
+  const id = await getActionId(api, props)
   if (!id) {
     return null
   }
 
-  const api = createXivApi(context)
-  const json = await api.data.sheets().get('Action', id.toString(), {
-    fields:
-      'Icon,Name,Description,ActionCategory,ClassJob,MaxCharges,Range,Cast100ms,Recast100ms,ClassJobLevel,EffectRange,ClassJobCategory',
-  })
-
-  return normalizeActionRow(json)
+  return queryAction(api, id)
 }
 
-async function getActionId(props: ICKActionProps, context: ICKContext) {
+async function getActionId(api: XIVAPI, props: ICKActionProps) {
   if (props.id) {
     const numId = parseInt(`${props.id}`, 10)
     if (!Number.isNaN(numId)) {
@@ -203,7 +201,6 @@ async function getActionId(props: ICKActionProps, context: ICKContext) {
     filters.push(`ClassJob=${props.jobId}`)
   }
 
-  const api = createXivApi(context)
   const id = await findXivRowId(api, 'Action', props.name, filters)
 
   if (id) {
