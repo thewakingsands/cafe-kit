@@ -1,6 +1,11 @@
 {
   "name": "@thewakingsands/xivapi-v2",
   "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thewakingsands/cafe-kit",
+    "directory": "pkgs/xivapi-v2"
+  },
   "type": "module",
   "exports": {
     ".": {

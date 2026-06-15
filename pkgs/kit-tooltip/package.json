@@ -1,6 +1,11 @@
 {
   "name": "@thewakingsands/kit-tooltip",
   "version": "0.4.0-beta.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thewakingsands/cafe-kit",
+    "directory": "pkgs/kit-tooltip"
+  },
   "main": "dist/bundle.js",
   "types": "dist/lib/main.d.ts",
   "dependencies": {
