@@ -27,6 +27,11 @@ on:
         required: true
         default: beta
         type: string
+      packages:
+        description: Optional space-separated package names to consider. Leave empty to consider every workspace package.
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
@@ -66,34 +71,114 @@ jobs:
             fi
             echo "version-strategy=package-json" >> "$GITHUB_OUTPUT"
             echo "preid=beta" >> "$GITHUB_OUTPUT"
+            echo "packages=" >> "$GITHUB_OUTPUT"
           else
             echo "tag=${{ inputs.channel }}" >> "$GITHUB_OUTPUT"
             echo "version-strategy=${{ inputs.version_strategy }}" >> "$GITHUB_OUTPUT"
             echo "preid=${{ inputs.preid }}" >> "$GITHUB_OUTPUT"
+            echo "packages=${{ inputs.packages }}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Resolve candidate packages
+        id: candidates
+        shell: bash
+        run: |
+          packages="${{ steps.options.outputs.packages }}"
+
+          if [[ -z "$packages" ]]; then
+            packages=$(node -e 'const fs = require("node:fs"); const path = require("node:path"); const packages = fs.readdirSync("pkgs").map((dir) => path.join("pkgs", dir, "package.json")).filter((file) => fs.existsSync(file)).map((file) => JSON.parse(fs.readFileSync(file, "utf8"))).filter((pkg) => !pkg.private).map((pkg) => pkg.name); console.log(packages.join(" "))')
+          fi
+
+          echo "packages=$packages" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve changed packages
+        id: changed
+        shell: bash
+        run: |
+          packages=()
+          for package in ${{ steps.candidates.outputs.packages }}; do
+            name=$(pnpm --silent --filter "$package" exec node -p 'require("./package.json").name')
+            version=$(pnpm --silent --filter "$package" exec node -p 'require("./package.json").version')
+
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "Skipping $name@$version because it is already published."
+            else
+              echo "Version changed for $name@$version."
+              packages+=("$package")
+            fi
+          done
+
+          echo "packages=${packages[*]}" >> "$GITHUB_OUTPUT"
+
       - name: Apply temporary prerelease versions
-        if: steps.options.outputs.version-strategy == 'prerelease'
-        run: pnpm -r --filter "./pkgs/*" exec npm version prerelease --preid "${{ steps.options.outputs.preid }}" --no-git-tag-version
+        if: steps.options.outputs.version-strategy == 'prerelease' && steps.changed.outputs.packages != ''
+        shell: bash
+        run: |
+          for package in ${{ steps.changed.outputs.packages }}; do
+            pnpm --filter "$package" exec npm version prerelease --preid "${{ steps.options.outputs.preid }}" --no-git-tag-version
+          done
+
+      - name: Resolve unpublished packages
+        id: unpublished
+        if: steps.changed.outputs.packages != ''
+        shell: bash
+        run: |
+          packages=()
+          for package in ${{ steps.changed.outputs.packages }}; do
+            name=$(pnpm --silent --filter "$package" exec node -p 'require("./package.json").name')
+            version=$(pnpm --silent --filter "$package" exec node -p 'require("./package.json").version')
+
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "Skipping $name@$version because it is already published."
+            else
+              echo "Will publish $name@$version."
+              packages+=("$package")
+            fi
+          done
+
+          echo "packages=${packages[*]}" >> "$GITHUB_OUTPUT"
 
       - name: Validate beta versions
-        if: steps.options.outputs.tag == 'beta'
-        run: pnpm -r --filter "./pkgs/*" exec node -e 'const p = require("./package.json"); if (!p.private && !p.version.includes("-")) { console.error(`${p.name}@${p.version} is not a prerelease version. Use version_strategy=prerelease or update package.json before publishing with the beta tag.`); process.exit(1); }'
+        if: steps.options.outputs.tag == 'beta' && steps.unpublished.outputs.packages != ''
+        shell: bash
+        run: |
+          for package in ${{ steps.unpublished.outputs.packages }}; do
+            pnpm --filter "$package" exec node -e 'const p = require("./package.json"); if (!p.private && !p.version.includes("-")) { console.error(`${p.name}@${p.version} is not a prerelease version. Use version_strategy=prerelease or update package.json before publishing with the beta tag.`); process.exit(1); }'
+          done
 
       - name: Validate latest versions
-        if: steps.options.outputs.tag == 'latest'
-        run: pnpm -r --filter "./pkgs/*" exec node -e 'const p = require("./package.json"); if (!p.private && p.version.includes("-")) { console.error(`${p.name}@${p.version} is a prerelease version and cannot be published with the latest tag.`); process.exit(1); }'
+        if: steps.options.outputs.tag == 'latest' && steps.unpublished.outputs.packages != ''
+        shell: bash
+        run: |
+          for package in ${{ steps.unpublished.outputs.packages }}; do
+            pnpm --filter "$package" exec node -e 'const p = require("./package.json"); if (!p.private && p.version.includes("-")) { console.error(`${p.name}@${p.version} is a prerelease version and cannot be published with the latest tag.`); process.exit(1); }'
+          done
 
       - name: Build packages
-        run: pnpm -r build
+        if: steps.unpublished.outputs.packages != ''
+        shell: bash
+        run: |
+          for package in ${{ steps.unpublished.outputs.packages }}; do
+            pnpm --filter "$package..." build
+          done
 
       - name: Show packages to publish
-        run: pnpm -r --filter "./pkgs/*" exec node -e 'const p = require("./package.json"); if (!p.private) console.log(`${p.name}@${p.version}`)'
+        if: steps.unpublished.outputs.packages != ''
+        shell: bash
+        run: |
+          for package in ${{ steps.unpublished.outputs.packages }}; do
+            pnpm --filter "$package" exec node -e 'const p = require("./package.json"); if (!p.private) console.log(`${p.name}@${p.version}`)'
+          done
 
       - name: Publish packages
-        run: pnpm -r --filter "./pkgs/*" publish --access public --tag "${{ steps.options.outputs.tag }}" --no-git-checks --provenance
+        if: steps.unpublished.outputs.packages != ''
+        shell: bash
+        run: |
+          for package in ${{ steps.unpublished.outputs.packages }}; do
+            pnpm --filter "$package" publish --access public --tag "${{ steps.options.outputs.tag }}" --no-git-checks --provenance
+          done
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
