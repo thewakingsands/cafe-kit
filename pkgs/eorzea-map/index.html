@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN" class="eorzea-map-standalone">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>艾欧泽亚交互地图</title>
+  </head>
+  <body>
+    <main><section class="map">正在读取地图数据……</section></main>
+    <script type="module">
+      import { create } from './src/scripts/app.ts'
+
+      const el = document.querySelector('section.map')
+      try {
+        const map = await create(el)
+        await map.loadMapKey(92)
+        window.map = map
+      } catch (error) {
+        el.textContent = `地图加载失败：${error.message}。请先运行 generate:data。`
+        console.error(error)
+      }
+    </script>
+  </body>
+</html>

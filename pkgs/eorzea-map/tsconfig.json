@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "rootDir": ".",
+    "skipLibCheck": true,
+    "types": ["vite/client"],
+    "declaration": true
+  },
+  "include": ["src"]
+}

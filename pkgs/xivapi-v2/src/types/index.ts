@@ -4,11 +4,6 @@ export { Models }
 
 export interface Options {
   /**
-   * The supported version of the game to use for the API.
-   * @default "latest"
-   */
-  version?: string
-  /**
    * Language to use for the API.
    */
   language?: keyof typeof Models.SchemaLanguage
@@ -24,5 +19,4 @@ export interface Options {
  * @see https://v2.xivapi.com/api/docs#tag/search/get/search
  */
 export type SearchParams = Models.SearchQuery &
-  Models.VersionQuery &
   Models.RowReaderQuery & { verbose?: boolean }

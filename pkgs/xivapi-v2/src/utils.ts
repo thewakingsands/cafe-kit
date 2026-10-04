@@ -52,10 +52,6 @@ export const request = async (
     if (!params.language) {
       if (options.language) url.searchParams.set('language', options.language)
     }
-
-    if (!params.version) {
-      if (options?.version) url.searchParams.set('version', options.version)
-    }
   }
 
   const response = await fetch(url)

@@ -1,0 +1,57 @@
+{
+  "name": "@thewakingsands/eorzea-interactive-map",
+  "version": "2.0.0-beta.0",
+  "description": "Eorzea Interactive Map",
+  "type": "module",
+  "main": "dist/map.umd.cjs",
+  "module": "dist/map.js",
+  "types": "dist/src/scripts/app.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/scripts/app.d.ts",
+      "import": "./dist/map.js",
+      "require": "./dist/map.umd.cjs"
+    },
+    "./style.css": "./dist/map.css",
+    "./dist/*": "./dist/*"
+  },
+  "files": [
+    "dist",
+    "scripts",
+    "example"
+  ],
+  "sideEffects": [
+    "**/*.css",
+    "**/*.styl"
+  ],
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 8005",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.js",
+    "generate:data": "pnpm --filter @thewakingsands/xivapi-v2 build && node scripts/generate-data.js",
+    "preversion": "pnpm build"
+  },
+  "dependencies": {
+    "@thewakingsands/xivapi-v2": "workspace:^",
+    "@types/leaflet": "^1.9.22",
+    "crel": "^4.2.1",
+    "leaflet": "^1.9.4"
+  },
+  "devDependencies": {
+    "stylus": "catalog:",
+    "tsx": "catalog:",
+    "unplugin-dts": "catalog:",
+    "vite": "catalog:"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thewakingsands/cafe-kit",
+    "directory": "pkgs/eorzea-map"
+  },
+  "author": "oott123",
+  "license": "BSD-3-Clause",
+  "publishConfig": {
+    "access": "public"
+  }
+}

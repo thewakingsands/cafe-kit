@@ -1,4 +1,6 @@
 dist/
+.tmp/
+.pnpm-store/
 
 # Logs
 logs

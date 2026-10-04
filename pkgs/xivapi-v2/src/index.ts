@@ -1,10 +1,10 @@
-import { Assets, formatIconUrl } from './lib/assets.js'
+import { Assets, formatIconUrl, formatMapUrl } from './lib/assets.js'
 import { Sheet, Sheets } from './lib/sheets.js'
 import type { Models, Options, SearchParams } from './types/index.js'
 import { CustomError, request } from './utils.js'
 
 export * from './types/index.js'
-export { formatIconUrl }
+export { formatIconUrl, formatMapUrl }
 
 export default class XIVAPI {
   public readonly options: Options
@@ -29,7 +29,7 @@ export default class XIVAPI {
      * @see https://v2.xivapi.com/api/docs#tag/assets
      * @since 0.5.0
      */
-    assets: () => new Assets(),
+    assets: () => new Assets(this.options),
   }
 
   /**
@@ -40,7 +40,6 @@ export default class XIVAPI {
    */
   constructor(
     options: Options = {
-      version: 'latest',
       language: 'en',
       verbose: false,
     },
@@ -77,4 +76,6 @@ export default class XIVAPI {
    * v2: `ui/icon/030000/030000_hr1.tex`
    */
   formatIconUrl = formatIconUrl
+
+  formatMapUrl = formatMapUrl
 }

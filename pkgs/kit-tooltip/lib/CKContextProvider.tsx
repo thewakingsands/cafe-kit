@@ -3,14 +3,12 @@ import { type ComponentChildren, createContext } from 'preact'
 import { useContext, useMemo } from 'preact/hooks'
 
 export interface ICKContext {
-  xivapiVersion?: string
   xivapiLanguage?: 'none' | 'en' | 'ja' | 'de' | 'fr' | 'chs' | 'tc' | 'ko'
   defaultHq: boolean
   hideSeCopyright: boolean
 }
 
 const defaultContext: ICKContext = {
-  xivapiVersion: 'latest',
   xivapiLanguage: 'chs',
   defaultHq: true,
   hideSeCopyright: false,
@@ -26,10 +24,9 @@ export const CKContextProvider = (props: {
   const xivapi = useMemo(
     () =>
       new XIVAPI({
-        version: context.xivapiVersion || 'latest',
         language: context.xivapiLanguage || 'chs',
       }),
-    [context.xivapiLanguage, context.xivapiVersion],
+    [context.xivapiLanguage],
   )
 
   return (

@@ -21,7 +21,6 @@ export interface ITooltipOptions {
 
 const defaultOptions: ITooltipOptions = {
   context: {
-    xivapiVersion: 'latest',
     xivapiLanguage: 'chs',
     defaultHq: true,
     hideSeCopyright: false,

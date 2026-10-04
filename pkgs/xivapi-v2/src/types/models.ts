@@ -4,17 +4,6 @@
  */
 
 /**
- * Query parameters accepted by endpoints that interact with versioned game data.
- * @see https://v2.xivapi.com/api/docs#model/versionquery
- */
-export interface VersionQuery {
-  /**
-   * Game version to utilise for this query.
-   */
-  version?: string | null
-}
-
-/**
  * Query parameters accepted by the asset endpoint.
  * @see https://v2.xivapi.com/api/docs#model/assetquery
  */
@@ -25,6 +14,12 @@ export interface AssetQuery {
    * @example "ui/icon/051000/051474_hr1.tex"
    */
   path: string
+}
+
+/** Query parameters for the composed map asset endpoint. */
+export interface MapQuery {
+  /** Defaults to jpg. The endpoint returns a complete map, not tiles. */
+  format?: 'jpg' | 'png' | 'webp'
 }
 
 /**
@@ -227,7 +222,7 @@ export interface SheetPath {
  * Query parameters accepted by the sheet endpoint.
  * @see https://v2.xivapi.com/api/docs#model/sheetquery
  */
-export interface SheetQuery {
+export interface SheetQuery extends RowReaderQuery {
   /**
    * Fetch rows after the specified row. Behavior is undefined if both `rows` and `after` are provided.
    */
@@ -285,29 +280,6 @@ export interface RowResponse<Fields, Transient>
    * The canonical specifier for the schema used in this response.
    */
   schema: SchemaSpecifier
-}
-
-/**
- * Response structure for the versions endpoint.
- * @see https://v2.xivapi.com/api/docs#model/versionsresponse
- */
-export interface VersionsResponse {
-  /**
-   * Array of versions available in the API.
-   * Metadata about a single version supported by the API.
-   */
-  versions: VersionMetadata[]
-}
-
-/**
- * Metadata about a single version supported by the API.
- * @see https://v2.xivapi.com/api/docs#model/versionmetadata
- */
-export interface VersionMetadata {
-  /**
-   * Names associated with this version. Version names specified here are accepted by the `version` query parameter throughout the API.
-   */
-  names: string[]
 }
 
 export interface RowReference<Fields, Transient = object>
