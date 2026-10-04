@@ -90,7 +90,7 @@ CSS 已包含 Leaflet 样式。`create()` 会清空容器并创建地图控件�
 | `map.onUpdateInfo(handler)` | 地图切换完成时以当前 `IMapInfo` 调用回调。 |
 | `map.offUpdateInfo(handler)` | 移除同一个回调函数。 |
 | `simpleMarker(x, y, iconUrl, mapInfo)` | 按游戏内地图坐标创建 Marker，需再调用 `addMarker()`。 |
-| `loader.getMapUrl(id)` | 获取地图图片 URL。 |
+| `loader.getMapUrl(id)` | 获取 WebP 格式的地图图片 URL。 |
 | `loader.getIconUrl(path)` | 将游戏图标纹理路径转换为 URL；无效路径返回 `null`。 |
 
 `setApiUrl()` 的配置由同一模块中的所有地图实例共享，调用时会清空 JSON 请求缓存，
@@ -158,7 +158,7 @@ function markLocation(map) {
 生成器将首次响应解析出的 schema 用于后续表请求，并写入 `manifest.json`。
 每次生成读取服务端当前提供的数据；指定 schema 仅选择表结构，不能固定游戏数据版本。
 
-浏览器运行时从 `https://xivapi-v2.xivcdn.com` 加载地图和图标，首次加载需下载整张地图图片。
+浏览器运行时从 `https://xivapi-v2.xivcdn.com` 加载地图和图标，地图以 WebP 格式读取，首次加载需下载整张地图图片。
 页面需要能够访问该服务。
 `setApiUrl()` 和 `setCdnUrl()` 仅设置 JSON 地址，不改变图片来源。
 

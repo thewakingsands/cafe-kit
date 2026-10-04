@@ -3,7 +3,7 @@ import { formatIconUrl, formatMapUrl } from '@thewakingsands/xivapi-v2'
 export const NULL_ICON_GROUP = '000000'
 
 export function getMapUrl(id: string) {
-  return formatMapUrl(id)
+  return formatMapUrl(id, { format: 'webp' })
 }
 
 export function getIconUrl(icon: string): string | null {
