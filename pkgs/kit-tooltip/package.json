@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@preact/preset-vite": "catalog:",
-    "stylus": "catalog:",
+    "sass": "catalog:",
     "unplugin-dts": "catalog:",
     "vite": "catalog:",
     "vite-plugin-css-injected-by-js": "catalog:"

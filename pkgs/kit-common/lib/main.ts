@@ -1,5 +1,5 @@
 // tslint:disable-next-line: no-var-requires
-import './styles/main.styl'
+import './styles/main.scss'
 
 export { h, render } from 'preact'
 export { CKAction } from './CKAction'

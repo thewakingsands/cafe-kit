@@ -22,7 +22,7 @@
   ],
   "sideEffects": [
     "**/*.css",
-    "**/*.styl"
+    "**/*.scss"
   ],
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 8005",
@@ -39,7 +39,7 @@
     "leaflet": "^1.9.4"
   },
   "devDependencies": {
-    "stylus": "catalog:",
+    "sass": "catalog:",
     "tsx": "catalog:",
     "unplugin-dts": "catalog:",
     "vite": "catalog:"

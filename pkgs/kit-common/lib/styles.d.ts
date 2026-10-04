@@ -1,1 +1,1 @@
-declare module '*.styl' {}
+declare module '*.scss' {}

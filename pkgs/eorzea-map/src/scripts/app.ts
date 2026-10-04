@@ -1,7 +1,7 @@
 import createElement from 'crel'
 import * as L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import '../stylesheets/index.styl'
+import '../stylesheets/index.scss'
 import { fromMapXY2D } from './coordinate.js'
 import type { EoMap } from './EoMap.js'
 import { initEvents } from './events.js'
