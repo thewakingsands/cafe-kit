@@ -6,7 +6,14 @@
     <title>艾欧泽亚交互地图</title>
   </head>
   <body>
-    <main><section class="map">正在读取地图数据……</section></main>
+    <main>
+      <div class="eorzea-map-glass" aria-hidden="true"></div>
+      <header class="eorzea-map-copyright">
+        艾欧泽亚交互地图 · FINAL FANTASY XIV © 2010–2026 SQUARE ENIX CO., LTD. All Rights Reserved.
+        <a href="https://ffcafe.org/" target="_blank" rel="noopener noreferrer">肥肥咖啡</a>
+      </header>
+      <section class="map">正在读取地图数据……</section>
+    </main>
     <script type="module">
       import { create } from './src/scripts/app.ts'
 
