@@ -8,13 +8,13 @@
 
 ## 安装
 
-本文档对应 **2.0.0-beta.0**。该预发布版本发布到 npm 后，可在应用项目中安装：
+在应用项目中安装：
 
 ```sh
-npm install @thewakingsands/eorzea-interactive-map@2.0.0-beta.0
+npm install @thewakingsands/eorzea-interactive-map
 ```
 
-发布前可按[源码开发](#源码开发)运行。浏览器需支持 ES 模块和 Fetch API；数据生成和源码开发
+浏览器需支持 ES 模块和 Fetch API；数据生成和源码开发
 使用 Node.js 24+。本包依赖浏览器 DOM，在 SSR 框架中应仅在客户端导入和初始化。
 
 ## 快速开始
@@ -162,9 +162,9 @@ function markLocation(map) {
 页面需要能够访问该服务。
 `setApiUrl()` 和 `setCdnUrl()` 仅设置 JSON 地址，不改变图片来源。
 
-## 从 1.x 迁移
+## 从旧版迁移
 
-- 按[数据生成与部署](#数据生成与部署)准备 2.0 数据，将 `setApiUrl()` 配置为 JSON 文件所在的静态目录。
+- 按[数据生成与部署](#数据生成与部署)重新生成地图数据，将 `setApiUrl()` 配置为 JSON 文件所在的静态目录。
   使用 `setCdnUrl(base)` 时，数据目录为 `${base}/data/`。
 - 将传统 `<script>` 对 `dist/map.js` 的引用改为 `dist/map.umd.cjs`，样式使用 `dist/map.css`。
   模块项目继续从包入口导入 JavaScript，并导入 `style.css`。
