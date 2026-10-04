@@ -11,6 +11,10 @@ const {
   render,
   h,
 } = CafeKitCommon
+
+const itemIconUrl =
+  'https://xivapi-v2.xivcdn.com/api/asset?path=ui%2Ficon%2F030000%2F030598_hr1.tex'
+
 render(
   h(
     CKBox,
@@ -31,7 +35,7 @@ render(
             rarity: 4,
             type: '单手剑',
             size: 'medium',
-            iconSrc: 'https://xivapi.com/i/030000/030598.png',
+            iconSrc: itemIconUrl,
           }),
         ]),
         h(CKStatGroup, null, [
@@ -114,38 +118,37 @@ render(
           rarity: 4,
           type: '单手剑',
           size: 'big',
-          iconSrc:
-            'https://huiji-public.huijistatic.com/ff14/uploads/8/88/60a961e1a8d98ba4660f20b4b039f3bfcec410de.png',
+          iconSrc: itemIconUrl,
         }),
         h(CKItemName, {
           name: '安忒亚·优雷卡',
           rarity: 4,
           type: '单手剑',
           size: 'medium',
-          iconSrc: 'https://xivapi.com/i/030000/030598.png',
+          iconSrc: itemIconUrl,
         }),
         h(CKItemName, {
           name: '安忒亚·优雷卡',
           rarity: 4,
           type: '单手剑',
           size: 'small',
-          iconSrc: 'https://xivapi.com/i/030000/030598.png',
+          iconSrc: itemIconUrl,
         }),
         h(CKContainer, null, [
           h(CKActionIcon, {
-            src: 'https://huiji-public.huijistatic.com/ff14/uploads/8/88/60a961e1a8d98ba4660f20b4b039f3bfcec410de.png',
+            src: itemIconUrl,
             size: 32,
           }),
           h(CKActionIcon, {
-            src: 'https://huiji-public.huijistatic.com/ff14/uploads/8/88/60a961e1a8d98ba4660f20b4b039f3bfcec410de.png',
+            src: itemIconUrl,
             size: 64,
           }),
           h(CKActionIcon, {
-            src: 'https://huiji-public.huijistatic.com/ff14/uploads/8/88/60a961e1a8d98ba4660f20b4b039f3bfcec410de.png',
+            src: itemIconUrl,
             size: 128,
           }),
           h(CKActionIcon, {
-            src: 'https://huiji-public.huijistatic.com/ff14/uploads/8/88/60a961e1a8d98ba4660f20b4b039f3bfcec410de.png',
+            src: itemIconUrl,
             size: 256,
           }),
         ]),
