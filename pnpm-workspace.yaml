@@ -2,21 +2,21 @@ packages:
   - pkgs/*
 
 allowBuilds:
-  esbuild: set this to true or false
+  esbuild: true
   preact: set this to true or false
 
 catalog:
   "@biomejs/biome": 2.5.0
   "@preact/preset-vite": ^2.10.5
-  "@tsconfig/node24": ^24.0.0
-  "@types/node": ^24.0.0
+  "@tsconfig/node24": ^24.0.5
+  "@types/node": ^24.19.1
   preact: ^10.29.2
   stylus: ^0.64.0
   tsdown: ^0.22.2
-  tsx: ^4.22.4
+  tsx: ^4.23.15
   typescript: ^6.0.3
   unplugin-dts: ^1.0.2
-  vite: ^8.0.16
+  vite: ^8.3.2
   vite-plugin-css-injected-by-js: ^5.0.1
   vitest: ^4.1.8
 
