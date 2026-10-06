@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN" class="eorzea-map-standalone">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>艾欧泽亚交互地图</title>
+    <link rel="stylesheet" href="../dist/map.css" />
+  </head>
+  <body>
+    <main>
+      <div class="eorzea-map-glass" aria-hidden="true"></div>
+      <header class="eorzea-map-copyright">
+        艾欧泽亚交互地图 · FINAL FANTASY XIV © 2010–2026 SQUARE ENIX CO., LTD. All Rights Reserved.
+        <a href="https://ffcafe.org/" target="_blank" rel="noopener noreferrer">肥肥咖啡</a>
+      </header>
+      <section class="map">正在读取地图数据……</section>
+    </main>
+    <script src="../dist/map.umd.js"></script>
+    <script>
+      const { create, setApiUrl } = window.YZWF.eorzeaMap
+      setApiUrl('../generated/data/')
+      const el = document.querySelector('section.map')
+      create(el).then(map => map.loadMapKey(92)).catch(error => {
+        el.textContent = `地图加载失败：${error.message}`
+      })
+    </script>
+  </body>
+</html>
