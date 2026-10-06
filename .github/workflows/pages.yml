@@ -18,6 +18,8 @@ jobs:
     name: Build examples and map data
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,6 +41,15 @@ jobs:
 
       - name: Build Pages site
         run: pnpm build:pages
+
+      - name: Publish site to pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: pages
+          publish_dir: dist/pages
+          # The action creates an orphan branch on the first publication.
+          force_orphan: false
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
