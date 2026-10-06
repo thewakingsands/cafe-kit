@@ -159,7 +159,7 @@ export class EoMap extends LFMap {
           this.tooltipsLayerGroup.addLayer(tt)
         }
 
-        if (marker['data{Type}'] === 1 && marker['data{Key}'] === previousId) {
+        if (marker.dataType === 1 && marker.dataKey === previousId) {
           panPoint = xy(marker.x, marker.y)
           mapMarker.getElement()?.classList.add('eorzeamap-label-current')
         }

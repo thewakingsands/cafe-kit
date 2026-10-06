@@ -6,30 +6,19 @@ import {
   Point,
   type Tooltip,
 } from 'leaflet'
-import {
-  getIconUrl,
-  type IMapMarker,
-  NULL_ICON_GROUP,
-  parseIcon,
-} from './loader.js'
+import { getIconUrl, type IMapMarker } from './loader.js'
 import { xy } from './XYPoint.js'
 
-const ICON_STORAGE = new Map<string, Icon | null>()
+const ICON_STORAGE = new Map<number, Icon | null>()
 
-export function isMinimap(icon: string) {
-  const { id } = parseIcon(icon)
-  const intId = Number(id)
-  return intId > 63200 && intId < 63500
+export function isMinimap(icon: number) {
+  return icon > 63200 && icon < 63500
 }
 
-export function getIcon(icon: string): Icon | null {
+export function getIcon(icon?: number): Icon | null {
+  if (!icon) return null
   const cached = ICON_STORAGE.get(icon)
   if (cached !== undefined) return cached
-  const { group } = parseIcon(icon)
-  if (group === NULL_ICON_GROUP) {
-    ICON_STORAGE.set(icon, null)
-    return null
-  }
   // Minimap textures are rendered as image overlays by EoMap.
   if (isMinimap(icon)) {
     return null
@@ -64,27 +53,24 @@ const emptyIcon = new DivIcon({
 })
 
 export function createMarker(markerInfo: IMapMarker): Marker | null {
-  if (markerInfo.subtextOrientation === 0) {
+  if ((markerInfo.orientation ?? 0) === 0) {
     return null
   }
 
   let icon: Icon | DivIcon | null = getIcon(markerInfo.icon)
   const extraClass = []
 
-  let type = typeMap[markerInfo['data{Type}']] || 'unkown'
+  let type = typeMap[markerInfo.dataType ?? 0] || 'unkown'
   if (markerInfo.type === 1) {
     type = 'area'
   }
-  const text =
-    type === 'tooltip'
-      ? markerInfo['data{Key}']
-      : markerInfo['placeName{Subtext}']
+  const text = type === 'tooltip' ? markerInfo.dataKey : markerInfo.name
 
   if (!icon && !text) {
     return null
   }
 
-  let direction = orientationMap[markerInfo.subtextOrientation] || 'auto'
+  let direction = orientationMap[markerInfo.orientation ?? 0] || 'auto'
   if (!icon) {
     icon = emptyIcon
     direction = 'center'
@@ -92,26 +78,26 @@ export function createMarker(markerInfo: IMapMarker): Marker | null {
   }
 
   const label = document.createElement('span')
-  label.textContent = text
+  label.textContent = text ?? ''
   label.style.whiteSpace = 'pre'
 
   const marker = new Marker(xy(markerInfo.x, markerInfo.y), {
     icon,
     interactive:
-      type === 'aetheryte' || type === 'travel' || !!markerInfo['data{Key}'],
+      type === 'aetheryte' || type === 'travel' || !!markerInfo.dataKey,
   })
 
   marker.on('add', () => {
     const el = marker.getElement()
     if (!el) return
-    el.dataset.dataKey = markerInfo['data{Key}']
-    el.dataset.dataType = `${markerInfo['data{Type}']}`
+    el.dataset.dataKey = markerInfo.dataKey ?? ''
+    el.dataset.dataType = `${markerInfo.dataType ?? 0}`
   })
   ;(marker as any).on('tooltipopen', ({ tooltip }: { tooltip: Tooltip }) => {
     const el = tooltip.getElement()
     if (!el) return
-    el.dataset.dataKey = markerInfo['data{Key}']
-    el.dataset.dataType = `${markerInfo['data{Type}']}`
+    el.dataset.dataKey = markerInfo.dataKey ?? ''
+    el.dataset.dataType = `${markerInfo.dataType ?? 0}`
   })
 
   if (!text) {

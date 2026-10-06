@@ -10,7 +10,7 @@ await rm(output, { recursive: true, force: true })
 await mkdir(output, { recursive: true })
 await cp(join(root, 'pages', 'index.html'), join(output, 'index.html'))
 
-for (const name of ['kit-common', 'kit-tooltip', 'eorzea-map']) {
+for (const name of ['kit-common', 'kit-tooltip']) {
   const source = join(root, 'pkgs', name)
   const target = join(output, name)
   await cp(join(source, 'example'), join(target, 'example'), {
@@ -21,16 +21,21 @@ for (const name of ['kit-common', 'kit-tooltip', 'eorzea-map']) {
 
 // Serve the UMD build as .js so static hosts send a JavaScript content type.
 const mapRoot = join(output, 'eorzea-map')
+const mapSource = join(root, 'pkgs', 'eorzea-map')
+await mkdir(join(mapRoot, 'assets'), { recursive: true })
 await cp(
-  join(mapRoot, 'dist', 'map.umd.cjs'),
-  join(mapRoot, 'dist', 'map.umd.js'),
+  join(mapSource, 'dist', 'map.umd.cjs'),
+  join(mapRoot, 'assets', 'map.umd.js'),
 )
-const mapExample = join(mapRoot, 'example', 'index.html')
-const html = await readFile(mapExample, 'utf8')
+await cp(join(mapSource, 'dist', 'map.css'), join(mapRoot, 'assets', 'map.css'))
+const html = await readFile(join(mapSource, 'example', 'index.html'), 'utf8')
 await writeFile(
-  mapExample,
-  html.replace('../dist/map.umd.cjs', '../dist/map.umd.js'),
+  join(mapRoot, 'index.html'),
+  html
+    .replace('../dist/map.umd.cjs', './assets/map.umd.js')
+    .replace('../dist/map.css', './assets/map.css')
+    .replace('../generated/data/', './data/'),
 )
 
-console.log(await generateData({ output: join(mapRoot, 'generated', 'data') }))
+console.log(await generateData({ output: join(mapRoot, 'data') }))
 console.log(`Pages site written to ${output}`)

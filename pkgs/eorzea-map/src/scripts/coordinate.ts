@@ -53,8 +53,8 @@ export function toMapXY3D(
   y: number,
 ): [number, number] {
   return [
-    toMapCoordinate3D(x, mapInfo.sizeFactor, mapInfo['offset{X}']),
-    toMapCoordinate3D(y, mapInfo.sizeFactor, mapInfo['offset{Y}']),
+    toMapCoordinate3D(x, mapInfo.sizeFactor, mapInfo.offsetX ?? 0),
+    toMapCoordinate3D(y, mapInfo.sizeFactor, mapInfo.offsetY ?? 0),
   ]
 }
 
@@ -64,7 +64,7 @@ export function fromMapXY2D(
   y: number,
 ): [number, number] {
   return [
-    fromMapCoordinate2D(x, mapInfo.sizeFactor, mapInfo['offset{X}']),
-    fromMapCoordinate2D(y, mapInfo.sizeFactor, mapInfo['offset{Y}']),
+    fromMapCoordinate2D(x, mapInfo.sizeFactor, mapInfo.offsetX ?? 0),
+    fromMapCoordinate2D(y, mapInfo.sizeFactor, mapInfo.offsetY ?? 0),
   ]
 }

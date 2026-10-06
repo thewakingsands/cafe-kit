@@ -10,11 +10,9 @@ export const MAP_FIELDS = [
   'OffsetX',
   'OffsetY',
   'MapMarkerRange',
-  'MapType@as(raw)',
   'PlaceName.Name',
   'PlaceNameRegion.Name',
   'PlaceNameSub.Name',
-  'TerritoryType.Name',
 ]
 export const MARKER_FIELDS = [
   'X',
@@ -26,7 +24,6 @@ export const MARKER_FIELDS = [
   'DataType',
   'DataKey.Id',
   'DataKey.Name',
-  'MapMarkerRegion@as(raw)',
 ]
 
 /** Pin the schema after the first page; retain subrow IDs in cursors. */
@@ -58,6 +55,11 @@ export async function readSheet(sheets, sheet, fields, reader, limit = 500) {
 
 const name = (reference) => reference?.fields?.Name ?? ''
 
+const compact = (record) =>
+  Object.fromEntries(
+    Object.entries(record).filter(([, value]) => value != null && value !== ''),
+  )
+
 function number(value, field) {
   if (!Number.isFinite(value)) throw new Error(`Missing or invalid ${field}`)
   return value
@@ -65,82 +67,77 @@ function number(value, field) {
 
 export function convertMap({ row_id, fields }) {
   if (typeof fields.Id !== 'string') throw new Error(`Map ${row_id} has no Id`)
-  return {
-    '#': String(row_id),
+  return compact({
+    rowId: row_id,
     id: fields.Id,
     sizeFactor: number(fields.SizeFactor, 'Map.SizeFactor'),
-    'placeName{Region}': name(fields.PlaceNameRegion),
-    'placeName{Sub}': name(fields.PlaceNameSub),
-    'offset{X}': number(fields.OffsetX, 'Map.OffsetX'),
-    'offset{Y}': number(fields.OffsetY, 'Map.OffsetY'),
-    territoryType: name(fields.TerritoryType),
+    placeNameRegion: name(fields.PlaceNameRegion),
+    placeNameSub: name(fields.PlaceNameSub),
+    offsetX: number(fields.OffsetX, 'Map.OffsetX') || undefined,
+    offsetY: number(fields.OffsetY, 'Map.OffsetY') || undefined,
     placeName: name(fields.PlaceName),
-    mapMarkerRange: number(fields.MapMarkerRange, 'Map.MapMarkerRange'),
-    hierarchy: number(fields['MapType@as(raw)'], 'Map.MapType'),
-  }
+    marker: number(fields.MapMarkerRange, 'Map.MapMarkerRange'),
+  })
 }
 
-export function convertMarker({ row_id, subrow_id, fields }) {
+export function convertMarker({ fields }) {
   const data = fields.DataKey
-  let key = String(data?.value ?? 0)
+  let key = data?.value ? String(data.value) : undefined
   if (fields.DataType === 1) {
     key = data?.fields?.Id ?? ''
   } else if (fields.DataType === 4) {
     key = data?.fields?.Name ?? ''
   }
-  return {
-    '#': `${row_id}.${subrow_id ?? 0}`,
+  return compact({
     x: number(fields.X, 'MapMarker.X'),
     y: number(fields.Y, 'MapMarker.Y'),
-    icon: fields.Icon?.path ?? 'ui/icon/000000/000000.tex',
-    'placeName{Subtext}': name(fields.PlaceNameSubtext),
-    subtextOrientation: number(
-      fields.SubtextOrientation,
-      'MapMarker.SubtextOrientation',
-    ),
-    mapMarkerRegion: String(fields['MapMarkerRegion@as(raw)'] ?? 0),
-    type: number(fields.Type, 'MapMarker.Type'),
-    'data{Type}': number(fields.DataType, 'MapMarker.DataType'),
-    'data{Key}': key,
-  }
+    icon:
+      Number(fields.Icon?.path?.match(/\/(\d{6})(?:_hr1)?\.tex$/)?.[1]) ||
+      undefined,
+    name: name(fields.PlaceNameSubtext),
+    orientation:
+      number(fields.SubtextOrientation, 'MapMarker.SubtextOrientation') ||
+      undefined,
+    type: number(fields.Type, 'MapMarker.Type') || undefined,
+    dataType: number(fields.DataType, 'MapMarker.DataType') || undefined,
+    dataKey: key,
+  })
 }
 
 function isEmptyMarker(marker) {
   return (
     marker.x === 0 &&
     marker.y === 0 &&
-    marker.icon === 'ui/icon/000000/000000.tex' &&
-    marker['placeName{Subtext}'] === '' &&
-    marker.subtextOrientation === 0 &&
-    marker.mapMarkerRegion === '0' &&
-    marker.type === 0 &&
-    marker['data{Type}'] === 0 &&
-    (marker['data{Key}'] === '' || marker['data{Key}'] === '0')
+    !marker.icon &&
+    !marker.name &&
+    !marker.orientation &&
+    !marker.type &&
+    !marker.dataType &&
+    !marker.dataKey
   )
 }
 
 export function createRegions(maps) {
   const regions = new Map()
   for (const map of maps) {
-    const regionName = map['placeName{Region}']
+    const regionName = map.placeNameRegion
     // These rows are duplicate/internal maps, retained for direct row lookups.
     if (
       !map.id ||
       !regionName ||
       !map.placeName ||
-      ['487', '534'].includes(map['#'])
+      [487, 534].includes(map.rowId)
     )
       continue
     if (!regions.has(regionName))
-      regions.set(regionName, { regionName, maps: [] })
-    regions.get(regionName).maps.push({
-      id: map.id,
-      key: Number(map['#']),
-      hierarchy: map.hierarchy,
-      name: map.placeName,
-      subName: map['placeName{Sub}'],
-      regionName,
-    })
+      regions.set(regionName, { placeNameRegion: regionName, maps: [] })
+    regions.get(regionName).maps.push(
+      compact({
+        rowId: map.rowId,
+        placeName: map.placeName,
+        placeNameSub: map.placeNameSub,
+      }),
+    )
   }
   // Unrecognised/localised region names retain their original order.
   const priority = (name) => {
@@ -148,7 +145,7 @@ export function createRegions(maps) {
     return index >= 0 ? index : name === '？？？？' ? 4 : 3
   }
   return [...regions.values()].sort(
-    (a, b) => priority(a.regionName) - priority(b.regionName),
+    (a, b) => priority(a.placeNameRegion) - priority(b.placeNameRegion),
   )
 }
 
@@ -163,30 +160,37 @@ export async function generateData({
   const markerRows = await readSheet(sheets, 'MapMarker', MARKER_FIELDS, reader)
   if (mapRows.length === 0 || markerRows.length === 0)
     throw new Error('Empty map dataset')
-  const maps = mapRows.map(convertMap)
-  // Drop placeholders after pagination and conversion; retain subrow IDs/order.
-  const markers = markerRows.map(convertMarker).filter((m) => !isEmptyMarker(m))
-  const regions = createRegions(maps)
+  const regionMaps = mapRows.map(convertMap).filter((map) => map.id)
+  // Subrow IDs are only needed for pagination; retain marker order within each row.
+  const markers = {}
+  let markerCount = 0
+  for (const row of markerRows) {
+    const marker = convertMarker(row)
+    if (isEmptyMarker(marker)) continue
+    markers[row.row_id] ??= []
+    markers[row.row_id].push(marker)
+    markerCount++
+  }
+  const regions = createRegions(regionMaps)
+  // Region names are stored once per group, not repeated in map metadata.
+  const maps = regionMaps.map(({ placeNameRegion: _, ...map }) => map)
   await mkdir(output, { recursive: true })
   for (const [filename, data] of Object.entries({
     'map.json': maps,
-    'mapMarker.json': markers,
+    'marker.json': markers,
     'region.json': regions,
     'manifest.json': {
       language,
       ...reader,
       maps: maps.length,
-      markers: markers.length,
+      markers: markerCount,
     },
   })) {
-    await writeFile(
-      resolve(output, filename),
-      `${JSON.stringify(data, null, 2)}\n`,
-    )
+    await writeFile(resolve(output, filename), `${JSON.stringify(data)}\n`)
   }
   return {
     maps: maps.length,
-    markers: markers.length,
+    markers: markerCount,
     regions: regions.length,
     output,
     ...reader,

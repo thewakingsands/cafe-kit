@@ -1,6 +1,6 @@
 import type { IMapInfo, IMapMarker } from './loader.js'
 
-let apiUrl = 'https://map.ffcafe.cn/assets/data/'
+let apiUrl = 'https://map-v2.ffcafe.cn/data/'
 const requests = new Map<string, Promise<unknown>>()
 
 export function setApiUrl(url: string) {
@@ -9,15 +9,14 @@ export function setApiUrl(url: string) {
 }
 
 export async function getMapMarkers(map: IMapInfo): Promise<IMapMarker[]> {
-  const markers = await fetchDataFile<IMapMarker[]>('mapMarker.json')
-  return markers
-    .filter((marker) => marker['#'].startsWith(`${map.mapMarkerRange}.`))
-    .reverse()
+  const markers =
+    await fetchDataFile<Record<number, IMapMarker[]>>('marker.json')
+  return [...(markers[map.marker] ?? [])].reverse()
 }
 
 export async function getMap(mapKey: number): Promise<IMapInfo> {
   const maps = await fetchDataFile<IMapInfo[]>('map.json')
-  const map = maps.find((map) => map?.['#'] === String(mapKey))
+  const map = maps.find((map) => map?.rowId === mapKey)
   if (!map?.id) throw new Error(`Map ${mapKey} was not found`)
   return map
 }
@@ -26,18 +25,11 @@ export async function getMapKeyById(mapId: string): Promise<number> {
   const maps = await fetchDataFile<IMapInfo[]>('map.json')
   const map = maps.find((map) => map?.id === mapId)
   if (!map) throw new Error(`Map ${mapId} was not found`)
-  return Number(map['#'])
+  return map.rowId
 }
 
-export async function getRegion(): Promise<IRegion[]> {
-  const regions = await fetchDataFile<IRegion[]>('region.json')
-  // Older datasets may list locations without a loadable map asset.
-  return regions
-    .map((region) => ({
-      ...region,
-      maps: region.maps.filter((map) => map.id),
-    }))
-    .filter((region) => region.maps.length > 0)
+export function getRegion(): Promise<IRegion[]> {
+  return fetchDataFile<IRegion[]>('region.json')
 }
 
 async function fetchDataFile<T>(filename: string): Promise<T> {
@@ -49,7 +41,12 @@ async function fetchDataFile<T>(filename: string): Promise<T> {
         if (!response.ok)
           throw new Error(`Failed to load ${url}: HTTP ${response.status}`)
         const data = await response.json()
-        if (!Array.isArray(data)) throw new Error(`Invalid map data: ${url}`)
+        if (
+          filename === 'marker.json'
+            ? !data || typeof data !== 'object' || Array.isArray(data)
+            : !Array.isArray(data)
+        )
+          throw new Error(`Invalid map data: ${url}`)
         return data
       },
     )
@@ -64,12 +61,10 @@ async function fetchDataFile<T>(filename: string): Promise<T> {
 }
 
 export interface IRegion {
-  regionName: string
+  placeNameRegion: string
   maps: Array<{
-    id: string
-    key: number
-    hierarchy: number
-    name: string
-    subName: string
+    rowId: number
+    placeName: string
+    placeNameSub?: string
   }>
 }

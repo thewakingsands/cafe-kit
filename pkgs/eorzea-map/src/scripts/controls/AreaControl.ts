@@ -47,15 +47,15 @@ export class AreaControl extends Control {
 
     for (const group of this.regions) {
       const optGroup = document.createElement('optgroup')
-      optGroup.label = group.regionName
+      optGroup.label = group.placeNameRegion
       this.select.appendChild(optGroup)
 
       for (const area of group.maps) {
         const option = document.createElement('option')
-        option.value = `${area.key}`
-        option.text = `${area.name}`
-        if (area.subName) {
-          option.text += ` - ${area.subName}`
+        option.value = `${area.rowId}`
+        option.text = `${area.placeName}`
+        if (area.placeNameSub) {
+          option.text += ` - ${area.placeNameSub}`
         }
         optGroup.appendChild(option)
       }
@@ -75,7 +75,7 @@ export class AreaControl extends Control {
   }
 
   private onSelectChange = () => {
-    if (this.map.mapInfo?.['#'] !== this.select.value) {
+    if (String(this.map.mapInfo?.rowId) !== this.select.value) {
       this.map.loadMapKey(Number(this.select.value)).catch(console.error)
     }
   }
@@ -85,16 +85,16 @@ export class AreaControl extends Control {
   }
 
   private onUpdateInfo = (mapInfo: IMapInfo) => {
-    let text = mapInfo.placeName
-    if (mapInfo['placeName{Sub}']) {
-      text += `\n${mapInfo['placeName{Sub}']}`
+    let text = mapInfo.placeName ?? mapInfo.id
+    if (mapInfo.placeNameSub) {
+      text += `\n${mapInfo.placeNameSub}`
     }
     if (mapInfo.id.startsWith('region')) {
       text += '\n区域地图显示信息可能有所缺失\n可点击上面地名选择地图'
     }
     this.placeNameContainer.textContent = text
     this.placeNameContainer.style.whiteSpace = 'pre-line'
-    this.select.value = mapInfo['#']
+    this.select.value = String(mapInfo.rowId)
   }
 }
 

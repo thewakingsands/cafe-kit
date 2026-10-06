@@ -4,9 +4,12 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
 import {
+  convertMap,
   convertMarker,
   createRegions,
   generateData,
+  MAP_FIELDS,
+  MARKER_FIELDS,
   readSheet,
 } from '../scripts/generate-data.js'
 
@@ -102,15 +105,33 @@ test('generation produces map metadata, linked markers and a manifest without ve
   const result = await generateData({ output, sheets })
   assert.equal(result.maps, 1)
   const maps = JSON.parse(await readFile(join(output, 'map.json'), 'utf8'))
-  assert.equal(maps[0]['#'], '92')
-  assert.equal(maps[0]['offset{X}'], -10)
+  assert.equal(maps[0].rowId, 92)
+  assert.equal(maps[0].offsetX, -10)
   assert.equal(Object.hasOwn(maps[0], 'version'), false)
   assert.equal(Object.hasOwn(maps[0], 'assetVersion'), false)
-  const markers = JSON.parse(
-    await readFile(join(output, 'mapMarker.json'), 'utf8'),
+  assert.equal(Object.hasOwn(maps[0], 'placeNameRegion'), false)
+  assert.equal(Object.hasOwn(maps[0], 'placeNameSub'), false)
+  const regions = JSON.parse(
+    await readFile(join(output, 'region.json'), 'utf8'),
   )
-  assert.equal(markers[0]['#'], '136.3')
-  assert.equal(markers[0]['data{Key}'], 'region/00')
+  assert.deepEqual(regions, [
+    {
+      placeNameRegion: '艾欧泽亚',
+      maps: [{ rowId: 92, placeName: '艾欧泽亚' }],
+    },
+  ])
+  const markers = JSON.parse(
+    await readFile(join(output, 'marker.json'), 'utf8'),
+  )
+  assert.deepEqual(Object.keys(markers), ['136'])
+  assert.equal(markers[136][0].icon, 60442)
+  assert.equal(
+    markers[136][0].name,
+    markerRow.fields.PlaceNameSubtext.fields.Name,
+  )
+  assert.equal(markers[136][0].orientation, 3)
+  assert.equal(Object.hasOwn(markers[136][0], 'subrowId'), false)
+  assert.equal(markers[136][0].dataKey, 'region/00')
   const manifest = JSON.parse(
     await readFile(join(output, 'manifest.json'), 'utf8'),
   )
@@ -122,7 +143,7 @@ test('generation produces map metadata, linked markers and a manifest without ve
   })
 })
 
-test('generation removes empty placeholders without renumbering or dropping meaningful markers', async (t) => {
+test('generation removes empty placeholders without dropping or reordering meaningful markers', async (t) => {
   const output = await mkdtemp(join(tmpdir(), 'eorzea-map-'))
   t.after(() => rm(output, { recursive: true, force: true }))
   const emptyFields = {
@@ -165,17 +186,17 @@ test('generation removes empty placeholders without renumbering or dropping mean
     },
   })
   const markers = JSON.parse(
-    await readFile(join(output, 'mapMarker.json'), 'utf8'),
+    await readFile(join(output, 'marker.json'), 'utf8'),
   )
   const expected = rows
-    .filter((_, i) => ![0, 2, 12].includes(i))
+    .filter((_, i) => ![0, 2, 8, 12].includes(i))
     .map(convertMarker)
-  assert.deepEqual(markers, expected)
-  assert.equal(result.markers, 10)
+  assert.deepEqual(markers, { 136: expected })
+  assert.equal(result.markers, 9)
   const manifest = JSON.parse(
     await readFile(join(output, 'manifest.json'), 'utf8'),
   )
-  assert.equal(manifest.markers, 10)
+  assert.equal(manifest.markers, 9)
 })
 
 test('a failed API request leaves existing generated data untouched', async (t) => {
@@ -208,9 +229,9 @@ test('marker text resolves polymorphic links and permits zero coordinates/icons'
       DataKey: { fields: { Name: 'First line\nSecond line' } },
     },
   })
-  assert.equal(tooltip['data{Key}'], 'First line\nSecond line')
+  assert.equal(tooltip.dataKey, 'First line\nSecond line')
   assert.equal(tooltip.x, 0)
-  assert.equal(tooltip.icon, 'ui/icon/000000/000000.tex')
+  assert.equal(Object.hasOwn(tooltip, 'icon'), false)
   assert.throws(
     () => convertMarker({ ...markerRow, fields: {} }),
     /MapMarker.X/,
@@ -219,15 +240,50 @@ test('marker text resolves polymorphic links and permits zero coordinates/icons'
 
 test('region sorting preserves all regions when preferred translated names are absent', () => {
   const map = {
-    '#': '92',
+    rowId: 92,
     id: 'world/00',
     placeName: 'Eorzea',
-    hierarchy: 2,
-    'placeName{Region}': 'Eorzea',
+    placeNameRegion: 'Eorzea',
   }
   assert.deepEqual(
-    createRegions([map]).map((r) => r.regionName),
+    createRegions([map]).map((r) => r.placeNameRegion),
     ['Eorzea'],
   )
   assert.deepEqual(createRegions([{ ...map, id: '' }]), [])
+})
+
+test('conversion uses camelCase names, omits empty defaults and keeps meaningful zero values', () => {
+  assert.deepEqual(
+    convertMap({
+      ...mapRow,
+      row_id: 0,
+      fields: { ...mapRow.fields, OffsetX: 0, OffsetY: 0, MapMarkerRange: 0 },
+    }),
+    {
+      rowId: 0,
+      id: 'world/00',
+      sizeFactor: 100,
+      placeNameRegion: '艾欧泽亚',
+      placeName: '艾欧泽亚',
+      marker: 0,
+    },
+  )
+  assert.deepEqual(
+    convertMarker({
+      row_id: 0,
+      subrow_id: 0,
+      fields: {
+        X: 0,
+        Y: 0,
+        Icon: undefined,
+        SubtextOrientation: 0,
+        Type: 0,
+        DataType: 0,
+        DataKey: { value: 0 },
+      },
+    }),
+    { x: 0, y: 0 },
+  )
+  assert.ok(!MAP_FIELDS.some((field) => /MapType|TerritoryType/.test(field)))
+  assert.ok(!MARKER_FIELDS.some((field) => /MapMarkerRegion/.test(field)))
 })

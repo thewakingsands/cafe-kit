@@ -48,10 +48,10 @@ export class PosControl extends Control {
     if (!this.map.mapInfo) return
     const [x, y] = eventToGame(event, this.map)
     this.rootContainer.innerHTML = [
-      '<span class="eorzea-map-letter">X: </span>',
+      '<span class="eorzea-map-letter">x: </span>',
       `<span class="eorzea-map-int">${x.toFixed(2).split('.')[0]}</span>`,
       `.<span class="eorzea-map-demical">${x.toFixed(2).split('.')[1]}</span>`,
-      ' <span class="eorzea-map-letter">Y: </span>',
+      ' <span class="eorzea-map-letter">y: </span>',
       `<span class="eorzea-map-int">${y.toFixed(2).split('.')[0]}</span>`,
       `.<span class="eorzea-map-demical">${y.toFixed(2).split('.')[1]}</span>`,
     ].join('')

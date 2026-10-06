@@ -13,8 +13,8 @@ test('map lookup uses row IDs rather than array indexes; changing the source res
   t.mock.method(globalThis, 'fetch', async (url) => {
     urls.push(url)
     return Response.json([
-      { '#': '92', id: 'world/00' },
-      { '#': '100', id: 'region/00' },
+      { rowId: 92, id: 'world/00' },
+      { rowId: 100, id: 'region/00' },
     ])
   })
   setApiUrl('/first')
@@ -27,42 +27,25 @@ test('map lookup uses row IDs rather than array indexes; changing the source res
   await assert.rejects(getMap(1), /was not found/)
 })
 
-test('marker range matching does not mix similarly prefixed IDs', async (t) => {
+test('grouped markers use exact ranges, preserve cached order and permit missing groups', async (t) => {
   t.mock.method(globalThis, 'fetch', async () =>
-    Response.json([{ '#': '13.0' }, { '#': '136.0' }, { '#': '136.1' }]),
+    Response.json({
+      13: [{ x: 13, y: 0 }],
+      136: [
+        { x: 1, y: 0 },
+        { x: 2, y: 0 },
+      ],
+    }),
   )
   setApiUrl('/markers')
-  assert.deepEqual(
-    (await getMapMarkers({ mapMarkerRange: 136 })).map((m) => m['#']),
-    ['136.1', '136.0'],
-  )
-})
-
-test('legacy region data omits locations without map assets and preserves valid entries', async (t) => {
-  const validMap = {
-    id: 'f1e6/00',
-    key: 180,
-    hierarchy: 1,
-    name: '黑衣森林东部林区',
-    subName: '十二神大圣堂',
-    regionName: '黑衣森林',
+  for (let i = 0; i < 2; i++) {
+    assert.deepEqual(
+      (await getMapMarkers({ marker: 136 })).map((m) => m.x),
+      [2, 1],
+    )
   }
-  const missingMap = {
-    ...validMap,
-    id: '',
-    key: 181,
-    name: '黑衣森林南部林区',
-    subName: '码头小屋',
-  }
-  const regions = [
-    { regionName: '黑衣森林', maps: [validMap, missingMap] },
-    { regionName: 'Empty', maps: [missingMap] },
-  ]
-  t.mock.method(globalThis, 'fetch', async () => Response.json(regions))
-  setApiUrl('/legacy')
-  assert.deepEqual(await getRegion(), [
-    { regionName: '黑衣森林', maps: [validMap] },
-  ])
+  assert.deepEqual(await getMapMarkers({ marker: 999 }), [])
+  assert.deepEqual(await getMapMarkers({ marker: 13 }), [{ x: 13, y: 0 }])
 })
 
 test('HTTP errors and invalid data are rejected and can be retried', async (t) => {
@@ -77,4 +60,16 @@ test('HTTP errors and invalid data are rejected and can be retried', async (t) =
   await assert.rejects(getRegion(), /HTTP 503/)
   await assert.rejects(getRegion(), /Invalid map data/)
   assert.deepEqual(await getRegion(), [])
+})
+
+test('region loading permits omitted subnames', async (t) => {
+  const regions = [
+    {
+      placeNameRegion: 'Eorzea',
+      maps: [{ rowId: 92, placeName: 'Eorzea' }],
+    },
+  ]
+  t.mock.method(globalThis, 'fetch', async () => Response.json(regions))
+  setApiUrl('/schema')
+  assert.deepEqual(await getRegion(), regions)
 })
