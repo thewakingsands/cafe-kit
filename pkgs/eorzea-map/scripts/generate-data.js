@@ -105,6 +105,20 @@ export function convertMarker({ row_id, subrow_id, fields }) {
   }
 }
 
+function isEmptyMarker(marker) {
+  return (
+    marker.x === 0 &&
+    marker.y === 0 &&
+    marker.icon === 'ui/icon/000000/000000.tex' &&
+    marker['placeName{Subtext}'] === '' &&
+    marker.subtextOrientation === 0 &&
+    marker.mapMarkerRegion === '0' &&
+    marker.type === 0 &&
+    marker['data{Type}'] === 0 &&
+    (marker['data{Key}'] === '' || marker['data{Key}'] === '0')
+  )
+}
+
 export function createRegions(maps) {
   const regions = new Map()
   for (const map of maps) {
@@ -150,7 +164,8 @@ export async function generateData({
   if (mapRows.length === 0 || markerRows.length === 0)
     throw new Error('Empty map dataset')
   const maps = mapRows.map(convertMap)
-  const markers = markerRows.map(convertMarker)
+  // Drop placeholders after pagination and conversion; retain subrow IDs/order.
+  const markers = markerRows.map(convertMarker).filter((m) => !isEmptyMarker(m))
   const regions = createRegions(maps)
   await mkdir(output, { recursive: true })
   for (const [filename, data] of Object.entries({

@@ -1,6 +1,6 @@
 import type { IMapInfo, IMapMarker } from './loader.js'
 
-let apiUrl = '/data/'
+let apiUrl = 'https://map.ffcafe.cn/assets/data/'
 const requests = new Map<string, Promise<unknown>>()
 
 export function setApiUrl(url: string) {
@@ -29,8 +29,15 @@ export async function getMapKeyById(mapId: string): Promise<number> {
   return Number(map['#'])
 }
 
-export function getRegion(): Promise<IRegion[]> {
-  return fetchDataFile<IRegion[]>('region.json')
+export async function getRegion(): Promise<IRegion[]> {
+  const regions = await fetchDataFile<IRegion[]>('region.json')
+  // Older datasets may list locations without a loadable map asset.
+  return regions
+    .map((region) => ({
+      ...region,
+      maps: region.maps.filter((map) => map.id),
+    }))
+    .filter((region) => region.maps.length > 0)
 }
 
 async function fetchDataFile<T>(filename: string): Promise<T> {

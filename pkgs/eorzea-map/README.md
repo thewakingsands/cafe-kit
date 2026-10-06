@@ -3,8 +3,9 @@
 基于 Leaflet 的《最终幻想 XIV》交互式地图，支持区域切换、游戏内标记、坐标换算和网格显示。
 提供 ES 模块、UMD 构建和 TypeScript 类型声明，可嵌入普通网页或前端应用。
 
-地图和图标由 XIVAPI v2 提供；地图名称、区域列表和标记数据由随包提供的 JavaScript
-脚本生成，需单独部署为静态 JSON 文件。
+地图和图标由 XIVAPI v2 提供；地图名称、区域列表和标记数据默认从
+`https://map.ffcafe.cn/assets/data/` 读取，无需自行生成或部署数据。
+也可使用随包提供的 JavaScript 脚本生成数据并自行托管。
 
 ## 安装
 
@@ -19,21 +20,8 @@ npm install @thewakingsands/eorzea-interactive-map
 
 ## 快速开始
 
-### 1. 准备地图数据
-
-地图数据需单独准备：当前构建流程不会自动生成数据，npm 包也不包含这些 JSON 文件。
-如果已有可用的数据目录，可直接通过 `setApiUrl()` 指向该目录，无需再次生成。
-否则，在安装了本包的应用项目根目录执行：
-
-```sh
-node node_modules/@thewakingsands/eorzea-interactive-map/scripts/generate-data.js --output public/data
-```
-
-生成过程需要联网，默认使用简体中文数据。这里假设应用将 `public/` 作为静态资源根目录，
-部署后应能访问 `/data/map.json`、`/data/mapMarker.json` 和 `/data/region.json`。
-其他目录结构可通过 `--output` 和 `setApiUrl()` 配置，详见[数据生成与部署](#数据生成与部署)。
-
-### 2. 创建地图
+默认数据为简体中文，页面需能访问数据 CDN 和 XIVAPI v2。
+如需其他语言或自行托管数据，见[数据生成与部署](#数据生成与部署)。
 
 为地图提供有明确宽高的容器：
 
@@ -44,14 +32,13 @@ node node_modules/@thewakingsands/eorzea-interactive-map/scripts/generate-data.j
 在支持 CSS 导入的前端构建工具中使用以下代码，并在容器挂载后执行：
 
 ```js
-import { create, setApiUrl } from '@thewakingsands/eorzea-interactive-map'
+import { create } from '@thewakingsands/eorzea-interactive-map'
 import '@thewakingsands/eorzea-interactive-map/style.css'
 
 async function main() {
   const container = document.getElementById('map')
   if (!container) throw new Error('找不到地图容器')
 
-  setApiUrl('/data/')
   const map = await create(container)
   await map.loadMapId('world/00')
   return map
@@ -69,7 +56,8 @@ CSS 已包含 Leaflet 样式。`create()` 会清空容器并创建地图控件�
 
 将包内的 `dist/map.umd.cjs` 和 `dist/map.css` 复制到站点静态目录，以普通 `<script>`
 加载。UMD 导出为 `window.YZWF.eorzeaMap`，使用方式见[完整 HTML 示例](./example/index.html)。
-示例默认相对引用包内的构建产物和生成数据，部署时需相应调整路径。
+示例相对引用构建产物，并通过 `setApiUrl()` 使用本地生成数据。
+使用默认 CDN 时可删除该调用，部署时需相应调整脚本和样式路径。
 
 通过 HTTP 服务访问页面，并确保 `.cjs` 文件使用 JavaScript MIME 类型。
 
@@ -81,7 +69,7 @@ CSS 已包含 Leaflet 样式。`create()` 会清空容器并创建地图控件�
 | API | 用途 |
 | --- | --- |
 | `create(element)` | 接收 `HTMLElement`，返回 `Promise<EoMap>`。 |
-| `setApiUrl(url)` | 设置 JSON 目录，默认 `/data/`；应在创建地图前调用。 |
+| `setApiUrl(url)` | 设置 JSON 目录，默认 `https://map.ffcafe.cn/assets/data/`；自定义时应在创建地图前调用。 |
 | `getRegion()` | 返回区域列表的 Promise，每个区域包含 `regionName` 和 `maps`。 |
 | `map.loadMapKey(key)` | 按 Map 表的数字行 ID 加载，例如 `92`；返回 `Promise<EoMap>`。 |
 | `map.loadMapId(id)` | 按 Map 表的资源 ID 加载，例如 `'world/00'`；返回 `Promise<EoMap>`。 |
@@ -96,6 +84,7 @@ CSS 已包含 Leaflet 样式。`create()` 会清空容器并创建地图控件�
 `setApiUrl()` 的配置由同一模块中的所有地图实例共享，调用时会清空 JSON 请求缓存，
 但不会自动刷新已有地图。`getRegion()` 返回的 `maps` 项包含 `key`、`id`、`name`、
 `subName` 和 `hierarchy`，可用于实现自己的地图选择器。
+旧数据中没有地图资源 ID 的条目及其产生的空区域会从区域列表中排除。
 
 ### 添加自定义标记
 
@@ -133,6 +122,23 @@ function markLocation(map) {
 
 ## 数据生成与部署
 
+仅在需要其他语言、更新数据或自行托管时使用。默认 CDN 数据可直接使用，npm 包不包含 JSON 数据文件。
+在安装了本包的应用项目根目录执行：
+
+```sh
+node node_modules/@thewakingsands/eorzea-interactive-map/scripts/generate-data.js --output public/data
+```
+
+生成过程需要联网，默认使用简体中文数据。这里假设应用将 `public/` 作为静态资源根目录，
+部署后应能访问 `/data/map.json`、`/data/mapMarker.json` 和 `/data/region.json`。
+在创建地图前设置数据目录：
+
+```js
+import { setApiUrl } from '@thewakingsands/eorzea-interactive-map'
+
+setApiUrl('/data/')
+```
+
 以下参数适用于安装后的数据生成脚本，也适用于仓库内的 `generate:data` 命令：
 
 | 参数 | 默认值 | 说明 |
@@ -164,8 +170,8 @@ function markLocation(map) {
 
 ## 从旧版迁移
 
-- 按[数据生成与部署](#数据生成与部署)重新生成地图数据，将 `setApiUrl()` 配置为 JSON 文件所在的静态目录。
-  使用 `setCdnUrl(base)` 时，数据目录为 `${base}/data/`。
+- 可继续使用原有的数组格式 JSON 数据，或直接使用默认 CDN，无需因升级重新生成数据。
+  自行托管时用 `setApiUrl()` 指向 JSON 目录；使用 `setCdnUrl(base)` 时，数据目录为 `${base}/data/`。
 - 将传统 `<script>` 对 `dist/map.js` 的引用改为 `dist/map.umd.cjs`，样式使用 `dist/map.css`。
   模块项目继续从包入口导入 JavaScript，并导入 `style.css`。
 - 如果使用了 `AdvancedTileLayer`、`getTileUrl`、`getBgUrl`、`setBaseUrl` 或 `setUrlFunction`，
@@ -183,7 +189,7 @@ pnpm --filter @thewakingsands/eorzea-interactive-map dev
 ```
 
 开发页面为 `http://localhost:8005`。`generate:data` 会先构建仓库内的 `xivapi-v2` 包，
-再将数据写入 `pkgs/eorzea-map/generated/data/`；开发服务器将其提供在 `/data/`。
+再将数据写入 `pkgs/eorzea-map/generated/data/`；开发服务器将其提供在 `/data/`，开发页面显式使用该本地目录。
 可追加参数，例如：
 
 ```sh

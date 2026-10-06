@@ -122,6 +122,62 @@ test('generation produces map metadata, linked markers and a manifest without ve
   })
 })
 
+test('generation removes empty placeholders without renumbering or dropping meaningful markers', async (t) => {
+  const output = await mkdtemp(join(tmpdir(), 'eorzea-map-'))
+  t.after(() => rm(output, { recursive: true, force: true }))
+  const emptyFields = {
+    X: 0,
+    Y: 0,
+    Icon: { path: 'ui/icon/000000/000000.tex' },
+    PlaceNameSubtext: { fields: { Name: '' } },
+    SubtextOrientation: 0,
+    'MapMarkerRegion@as(raw)': 0,
+    Type: 0,
+    DataType: 0,
+    DataKey: { value: 0 },
+  }
+  const rows = [
+    {},
+    { Icon: { path: 'ui/icon/060000/060561.tex' } },
+    {},
+    { DataType: 1, DataKey: { fields: { Id: 'region/00' } } },
+    { DataType: 4, DataKey: { fields: { Name: 'Tooltip' } } },
+    { PlaceNameSubtext: { fields: { Name: 'Area' } } },
+    { X: 0, Y: 100 },
+    { X: 100, Y: 0 },
+    { 'MapMarkerRegion@as(raw)': 1 },
+    { SubtextOrientation: 2 },
+    { Type: 1 },
+    { DataKey: { value: 42 } },
+    { DataKey: { value: '' } },
+  ].map((fields, subrow_id) => ({
+    row_id: 136,
+    subrow_id,
+    fields: { ...emptyFields, ...fields },
+  }))
+  const result = await generateData({
+    output,
+    sheets: {
+      list: async (sheet, params) => ({
+        rows:
+          params.after === undefined ? (sheet === 'Map' ? [mapRow] : rows) : [],
+      }),
+    },
+  })
+  const markers = JSON.parse(
+    await readFile(join(output, 'mapMarker.json'), 'utf8'),
+  )
+  const expected = rows
+    .filter((_, i) => ![0, 2, 12].includes(i))
+    .map(convertMarker)
+  assert.deepEqual(markers, expected)
+  assert.equal(result.markers, 10)
+  const manifest = JSON.parse(
+    await readFile(join(output, 'manifest.json'), 'utf8'),
+  )
+  assert.equal(manifest.markers, 10)
+})
+
 test('a failed API request leaves existing generated data untouched', async (t) => {
   const output = await mkdtemp(join(tmpdir(), 'eorzea-map-'))
   t.after(() => rm(output, { recursive: true, force: true }))

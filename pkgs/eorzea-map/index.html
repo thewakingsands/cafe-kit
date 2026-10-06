@@ -15,8 +15,9 @@
       <section class="map">正在读取地图数据……</section>
     </main>
     <script type="module">
-      import { create } from './src/scripts/app.ts'
+      import { create, setApiUrl } from './src/scripts/app.ts'
 
+      setApiUrl('/data/')
       const el = document.querySelector('section.map')
       try {
         const map = await create(el)

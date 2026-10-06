@@ -38,6 +38,33 @@ test('marker range matching does not mix similarly prefixed IDs', async (t) => {
   )
 })
 
+test('legacy region data omits locations without map assets and preserves valid entries', async (t) => {
+  const validMap = {
+    id: 'f1e6/00',
+    key: 180,
+    hierarchy: 1,
+    name: '黑衣森林东部林区',
+    subName: '十二神大圣堂',
+    regionName: '黑衣森林',
+  }
+  const missingMap = {
+    ...validMap,
+    id: '',
+    key: 181,
+    name: '黑衣森林南部林区',
+    subName: '码头小屋',
+  }
+  const regions = [
+    { regionName: '黑衣森林', maps: [validMap, missingMap] },
+    { regionName: 'Empty', maps: [missingMap] },
+  ]
+  t.mock.method(globalThis, 'fetch', async () => Response.json(regions))
+  setApiUrl('/legacy')
+  assert.deepEqual(await getRegion(), [
+    { regionName: '黑衣森林', maps: [validMap] },
+  ])
+})
+
 test('HTTP errors and invalid data are rejected and can be retried', async (t) => {
   let calls = 0
   t.mock.method(globalThis, 'fetch', async () => {
