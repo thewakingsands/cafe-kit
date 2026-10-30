@@ -5,7 +5,7 @@ import '../stylesheets/index.scss'
 import { fromMapXY2D } from './coordinate.js'
 import type { EoMap } from './EoMap.js'
 import { initEvents } from './events.js'
-import { getRegion, setApiUrl } from './fetchData.js'
+import { getRegion, setApiUrl, setDataProvider } from './fetchData.js'
 import * as loader from './loader.js'
 import { initMap } from './map.js'
 import { xy } from './XYPoint.js'
@@ -93,6 +93,7 @@ const untypedWindow = window as any
 
 const version = __LIB_VERSION__
 
+export type { IRegion, MapDataProvider } from './fetchData.js'
 export type { EoMap } from './EoMap.js'
 export type {
   IconUrlResolver,
@@ -109,6 +110,7 @@ export {
   L,
   loader,
   setApiUrl,
+  setDataProvider,
   setCdnUrl,
   simpleMarker,
   version,

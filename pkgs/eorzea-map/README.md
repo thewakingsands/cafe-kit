@@ -178,3 +178,9 @@ npm install @thewakingsands/eorzea-interactive-map@latest
 ## 许可证
 
 [BSD-3-Clause](./LICENSE)。
+
+## 自定义地图数据
+
+`setDataProvider(provider)` 接受异步的 `getRegion()`、`getMap(rowId)`、`getMapKeyById(id)` 和 `getMapMarkers(map)`，返回值分别使用导出的 `IRegion`、`IMapInfo`、`IMapMarker` 类型。标记按数据源原始顺序返回，地图库会复制数组并反转显示顺序。
+
+调用 `setDataProvider()` 恢复默认 HTTP 数据源；`setApiUrl()` 只修改默认源。配置作用于当前模块中的所有地图，切换数据源前应销毁旧地图并取消旧请求。图片地址仍由 `setMapUrlResolver` 和 `setIconUrlResolver` 配置。
