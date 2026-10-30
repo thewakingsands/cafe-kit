@@ -30,19 +30,22 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test test/*.test.js",
     "generate:data": "pnpm --filter @thewakingsands/xivapi-v2 build && node scripts/generate-data.js",
-    "preversion": "pnpm build"
+    "preversion": "pnpm build",
+    "prepare": "vite build"
   },
   "dependencies": {
-    "@thewakingsands/xivapi-v2": "workspace:^",
+    "@thewakingsands/xivapi-v2": "^1.1.0",
     "@types/leaflet": "^1.9.22",
     "crel": "^4.2.1",
     "leaflet": "^1.9.4"
   },
   "devDependencies": {
-    "sass": "catalog:",
-    "tsx": "catalog:",
-    "unplugin-dts": "catalog:",
-    "vite": "catalog:"
+    "sass": "^1.105.1",
+    "tsx": "^4.23.15",
+    "unplugin-dts": "^1.0.2",
+    "vite": "^8.3.2",
+    "typescript": "^6.0.3",
+    "@tsconfig/node24": "^24.0.5"
   },
   "repository": {
     "type": "git",

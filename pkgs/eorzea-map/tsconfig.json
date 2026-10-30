@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "@tsconfig/node24/tsconfig.json",
   "compilerOptions": {
     "module": "ESNext",
     "moduleResolution": "Bundler",
@@ -7,7 +7,8 @@
     "rootDir": ".",
     "skipLibCheck": true,
     "types": ["vite/client"],
-    "declaration": true
+    "declaration": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src"]
 }

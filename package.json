@@ -8,8 +8,7 @@
     "build": "pnpm -r build",
     "build:pages": "pnpm build && node scripts/build-pages.mjs",
     "watch": "pnpm -r watch",
-    "lint": "biome check --write pkgs",
-    "prepare": "pnpm --filter @thewakingsands/eorzea-interactive-map... build"
+    "lint": "biome check --write pkgs"
   },
   "workspaces": [
     "pkgs/*"
