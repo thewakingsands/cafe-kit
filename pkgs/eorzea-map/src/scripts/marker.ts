@@ -9,7 +9,7 @@ import {
 import { getIconUrl, type IMapMarker } from './loader.js'
 import { xy } from './XYPoint.js'
 
-const ICON_STORAGE = new Map<number, Icon | null>()
+const ICON_STORAGE = new Map<string, Icon>()
 
 export function isMinimap(icon: number) {
   return icon > 63200 && icon < 63500
@@ -17,8 +17,6 @@ export function isMinimap(icon: number) {
 
 export function getIcon(icon?: number): Icon | null {
   if (!icon) return null
-  const cached = ICON_STORAGE.get(icon)
-  if (cached !== undefined) return cached
   // Minimap textures are rendered as image overlays by EoMap.
   if (isMinimap(icon)) {
     return null
@@ -26,11 +24,13 @@ export function getIcon(icon?: number): Icon | null {
   const iconSize = new Point(32, 32)
   const iconUrl = getIconUrl(icon)
   if (!iconUrl) return null
+  const cached = ICON_STORAGE.get(iconUrl)
+  if (cached) return cached
   const mapIcon = new Icon({
     iconSize,
     iconUrl,
   })
-  ICON_STORAGE.set(icon, mapIcon)
+  ICON_STORAGE.set(iconUrl, mapIcon)
   return mapIcon
 }
 

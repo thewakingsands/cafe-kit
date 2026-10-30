@@ -2,7 +2,22 @@ import { formatIconUrl, formatMapUrl } from '@thewakingsands/xivapi-v2'
 
 export const NULL_ICON_GROUP = '000000'
 
+export type MapUrlResolver = (id: string) => string
+export type IconUrlResolver = (id: number) => string | null
+
+let mapUrlResolver: MapUrlResolver | undefined
+let iconUrlResolver: IconUrlResolver | undefined
+
+export function setMapUrlResolver(resolver?: MapUrlResolver) {
+  mapUrlResolver = resolver
+}
+
+export function setIconUrlResolver(resolver?: IconUrlResolver) {
+  iconUrlResolver = resolver
+}
+
 export function getMapUrl(id: string) {
+  if (mapUrlResolver) return mapUrlResolver(id)
   return formatMapUrl(id, { format: 'webp' })
 }
 
@@ -13,7 +28,9 @@ export function getIconUrl(icon?: string | number): string | null {
     const group = String(Math.floor(icon / 1000) * 1000).padStart(6, '0')
     icon = `ui/icon/${group}/${String(icon).padStart(6, '0')}.tex`
   }
-  if (parseIcon(icon).id === NULL_ICON_GROUP) return null
+  const { id } = parseIcon(icon)
+  if (id === NULL_ICON_GROUP) return null
+  if (iconUrlResolver) return iconUrlResolver(Number(id))
   return formatIconUrl(icon)
 }
 

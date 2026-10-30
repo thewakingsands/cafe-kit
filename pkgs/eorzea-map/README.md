@@ -76,8 +76,32 @@ CSS 已包含 Leaflet 样式。`create()` 会清空容器并创建地图控件�
 | `map.onUpdateInfo(handler)`            | 地图切换完成时以当前 `IMapInfo` 调用回调。                                          |
 | `map.offUpdateInfo(handler)`           | 移除同一个回调函数。                                                                |
 | `simpleMarker(x, y, iconUrl, mapInfo)` | 按游戏内地图坐标创建 Marker，需再调用 `addMarker()`。                               |
-| `loader.getMapUrl(id)`                 | 获取 WebP 格式的地图图片 URL。                                                      |
+| `setMapUrlResolver(fn)`                | 自定义地图图片地址生成函数，参数为地图资源 ID。 |
+| `setIconUrlResolver(fn)`               | 自定义内置图标地址生成函数，参数为数字图标 ID。 |
+| `loader.getMapUrl(id)`                 | 获取地图图片 URL，默认使用 XIVAPI v2 的 WebP 图片。 |
 | `loader.getIconUrl(icon)`              | 将数字图标 ID 或游戏图标纹理路径转换为 URL；无效值返回 `null`。                     |
+
+### 自定义图片来源
+
+在创建地图前设置 URL 生成函数，可分别替换地图底图和内置图标的来源：
+
+```js
+import {
+  setMapUrlResolver,
+  setIconUrlResolver,
+} from "@thewakingsands/eorzea-interactive-map";
+
+setMapUrlResolver((id) => `https://cdn.example.com/maps/${id}.webp`);
+setIconUrlResolver((id) => `https://cdn.example.com/icons/${id}.png`);
+```
+
+地图函数接收类似 `world/00` 的资源 ID；图标函数接收类似 `60561` 的数字 ID，
+也适用于地图中的小地图叠加图片。函数应同步返回图片 URL；图标函数返回 `null` 可隐藏对应图片。
+自定义图片应与原图片内容、比例一致，以保持标记和坐标对齐。
+
+不传参数调用 `setMapUrlResolver()` 或 `setIconUrlResolver()` 可恢复默认的 XIVAPI v2 来源。
+配置对同一模块创建的所有地图生效；已显示的图片需要重新加载地图才会更新。
+`setApiUrl()` 和 `setCdnUrl()` 只设置 JSON 数据来源，不影响图片地址。
 
 ### 添加自定义标记
 

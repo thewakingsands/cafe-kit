@@ -94,7 +94,13 @@ const untypedWindow = window as any
 const version = __LIB_VERSION__
 
 export type { EoMap } from './EoMap.js'
-export type { IMapInfo, IMapMarker } from './loader.js'
+export type {
+  IconUrlResolver,
+  IMapInfo,
+  IMapMarker,
+  MapUrlResolver,
+} from './loader.js'
+export { setIconUrlResolver, setMapUrlResolver } from './loader.js'
 export * from './markers/index.js'
 export {
   create,
