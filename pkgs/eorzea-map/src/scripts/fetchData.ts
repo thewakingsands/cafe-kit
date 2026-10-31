@@ -69,7 +69,6 @@ export interface IRegion {
   }>
 }
 
-
 export interface MapDataProvider {
   getRegion(): Promise<IRegion[]>
   getMap(rowId: number): Promise<IMapInfo>
@@ -97,5 +96,5 @@ export function getMapKeyById(id: string): Promise<number> {
   return provider.getMapKeyById(id)
 }
 export async function getMapMarkers(map: IMapInfo): Promise<IMapMarker[]> {
-  return [...await provider.getMapMarkers(map)].reverse()
+  return [...(await provider.getMapMarkers(map))].reverse()
 }

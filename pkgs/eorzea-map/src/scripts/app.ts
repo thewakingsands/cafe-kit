@@ -93,8 +93,8 @@ const untypedWindow = window as any
 
 const version = __LIB_VERSION__
 
-export type { IRegion, MapDataProvider } from './fetchData.js'
 export type { EoMap } from './EoMap.js'
+export type { IRegion, MapDataProvider } from './fetchData.js'
 export type {
   IconUrlResolver,
   IMapInfo,
@@ -110,8 +110,8 @@ export {
   L,
   loader,
   setApiUrl,
-  setDataProvider,
   setCdnUrl,
+  setDataProvider,
   simpleMarker,
   version,
   xy,

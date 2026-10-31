@@ -25,6 +25,3 @@ catalog:
 
 onlyBuiltDependencies:
   - esbuild
-
-minimumReleaseAgeExclude:
-  - "@thewakingsands/xivapi-v2@1.1.0"

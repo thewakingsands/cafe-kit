@@ -69,8 +69,8 @@ importers:
   pkgs/eorzea-map:
     dependencies:
       '@thewakingsands/xivapi-v2':
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: workspace:^
+        version: link:../xivapi-v2
       '@types/leaflet':
         specifier: ^1.9.22
         version: 1.9.22
@@ -81,23 +81,17 @@ importers:
         specifier: ^1.9.4
         version: 1.9.4
     devDependencies:
-      '@tsconfig/node24':
-        specifier: ^24.0.5
-        version: 24.0.5
       sass:
-        specifier: ^1.105.1
+        specifier: 'catalog:'
         version: 1.105.1
       tsx:
-        specifier: ^4.23.15
+        specifier: 'catalog:'
         version: 4.23.15
-      typescript:
-        specifier: ^6.0.3
-        version: 6.0.3
       unplugin-dts:
-        specifier: ^1.0.2
+        specifier: 'catalog:'
         version: 1.0.2(esbuild@0.28.2)(rolldown@1.2.12)(typescript@6.0.3)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(sass@1.105.1)(terser@5.48.0)(tsx@4.23.15))
       vite:
-        specifier: ^8.3.2
+        specifier: 'catalog:'
         version: 8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(sass@1.105.1)(terser@5.48.0)(tsx@4.23.15)
 
   pkgs/kit-common:
@@ -780,9 +774,6 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
-
-  '@thewakingsands/xivapi-v2@1.1.0':
-    resolution: {integrity: sha512-qFAa6M0IPCnrrEPOi2IA5+RgeennERd6xVimYJiplFjX1qBnN8O6/kIem74p4cZ4aHe2FfxZH+n0IikjIbV3lg==}
 
   '@tsconfig/node24@24.0.5':
     resolution: {integrity: sha512-DWC54fGPuhZgg3Ighg4Y/A/bA3ZdB5hnzAuv/MkQ/X85sVsBsMQxu8t7khutdYeiNksBbFdDyeqv1HSW2Zl8aA==}
@@ -1823,7 +1814,7 @@ snapshots:
 
   '@jridgewell/source-map@0.3.11':
     dependencies:
-      '@jridgewell/gen-mapping': 0.3.12
+      '@jridgewell/gen-mapping': 0.3.5
       '@jridgewell/trace-mapping': 0.3.31
     optional: true
 
@@ -1996,8 +1987,6 @@ snapshots:
       picomatch: 4.0.7
 
   '@standard-schema/spec@1.1.0': {}
-
-  '@thewakingsands/xivapi-v2@1.1.0': {}
 
   '@tsconfig/node24@24.0.5': {}
 
