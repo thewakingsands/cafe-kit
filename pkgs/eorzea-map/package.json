@@ -1,6 +1,6 @@
 {
   "name": "@thewakingsands/eorzea-interactive-map",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0",
   "description": "Eorzea Interactive Map",
   "type": "module",
   "main": "dist/map.umd.cjs",
