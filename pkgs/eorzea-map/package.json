@@ -30,7 +30,8 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test test/*.test.js",
     "generate:data": "pnpm --filter @thewakingsands/xivapi-v2 build && node scripts/generate-data.js",
-    "preversion": "pnpm build"
+    "preversion": "pnpm build",
+    "prepack": "pnpm --filter @thewakingsands/xivapi-v2 build && pnpm build"
   },
   "dependencies": {
     "@thewakingsands/xivapi-v2": "workspace:^",

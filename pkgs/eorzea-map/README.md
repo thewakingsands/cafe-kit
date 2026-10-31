@@ -178,3 +178,17 @@ npm install @thewakingsands/eorzea-interactive-map@latest
 ## 许可证
 
 [BSD-3-Clause](./LICENSE)。
+
+## 自定义地图数据
+
+`setDataProvider(provider)` 接受异步的 `getRegion()`、`getMap(rowId)`、`getMapKeyById(id)` 和 `getMapMarkers(map)`，返回值分别使用导出的 `IRegion`、`IMapInfo`、`IMapMarker` 类型。标记按数据源原始顺序返回，地图库会复制数组并反转显示顺序。
+
+调用 `setDataProvider()` 恢复默认 HTTP 数据源；`setApiUrl()` 只修改默认源。配置作用于当前模块中的所有地图，切换数据源前应销毁旧地图并取消旧请求。图片地址仍由 `setMapUrlResolver` 和 `setIconUrlResolver` 配置。
+
+## 从源码打包
+
+在仓库根目录执行 `pnpm install --frozen-lockfile`，然后执行
+`pnpm --filter @thewakingsands/eorzea-interactive-map pack`。
+打包前会构建工作区内的 XIVAPI 客户端和地图库；生成的 `.tgz` 包含 JS、CSS 和类型声明，
+其中的 `workspace:` 与 `catalog:` 引用由 pnpm 转换为版本范围。
+独立应用安装此 tarball，无需检出或构建 cafe-kit；不要直接安装 Git 源码子目录。
