@@ -6,6 +6,7 @@ import {
   getMapMarkers,
   getRegion,
   setApiUrl,
+  setDataProvider,
 } from '../src/scripts/fetchData.ts'
 
 test('map lookup uses row IDs rather than array indexes; changing the source resets caches', async (t) => {
@@ -72,4 +73,52 @@ test('region loading permits omitted subnames', async (t) => {
   t.mock.method(globalThis, 'fetch', async () => Response.json(regions))
   setApiUrl('/schema')
   assert.deepEqual(await getRegion(), regions)
+})
+
+test('custom providers cover every data entry without HTTP and preserve marker order', async (t) => {
+  t.mock.method(globalThis, 'fetch', async () => {
+    throw new Error('Unexpected HTTP')
+  })
+  const map = { rowId: 123, id: 'test/00', marker: 42 }
+  const markers = [
+    { x: 1, y: 0 },
+    { x: 2, y: 0 },
+  ]
+  let attempts = 0
+  setDataProvider({
+    getRegion: async () => [{ placeNameRegion: 'Local client', maps: [] }],
+    getMap: async (id) => {
+      assert.equal(id, 123)
+      return map
+    },
+    getMapKeyById: async (id) => {
+      assert.equal(id, 'test/00')
+      return 123
+    },
+    getMapMarkers: async (value) => {
+      assert.equal(value, map)
+      if (++attempts === 1) throw new Error('retry')
+      return markers
+    },
+  })
+  try {
+    setApiUrl('/does-not-override-provider')
+    assert.equal((await getRegion())[0].placeNameRegion, 'Local client')
+    assert.equal(await getMap(123), map)
+    assert.equal(await getMapKeyById('test/00'), 123)
+    await assert.rejects(getMapMarkers(map), /retry/)
+    assert.deepEqual(
+      (await getMapMarkers(map)).map((m) => m.x),
+      [2, 1],
+    )
+    assert.deepEqual(
+      markers.map((m) => m.x),
+      [1, 2],
+    )
+  } finally {
+    setDataProvider()
+  }
+  t.mock.method(globalThis, 'fetch', async () => Response.json([]))
+  setApiUrl('/restored')
+  assert.deepEqual(await getRegion(), [])
 })

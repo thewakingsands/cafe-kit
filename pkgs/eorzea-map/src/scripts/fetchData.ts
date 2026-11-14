@@ -8,27 +8,27 @@ export function setApiUrl(url: string) {
   requests.clear()
 }
 
-export async function getMapMarkers(map: IMapInfo): Promise<IMapMarker[]> {
+async function httpGetMapMarkers(map: IMapInfo): Promise<IMapMarker[]> {
   const markers =
     await fetchDataFile<Record<number, IMapMarker[]>>('marker.json')
-  return [...(markers[map.marker] ?? [])].reverse()
+  return markers[map.marker] ?? []
 }
 
-export async function getMap(mapKey: number): Promise<IMapInfo> {
+async function httpGetMap(mapKey: number): Promise<IMapInfo> {
   const maps = await fetchDataFile<IMapInfo[]>('map.json')
   const map = maps.find((map) => map?.rowId === mapKey)
   if (!map?.id) throw new Error(`Map ${mapKey} was not found`)
   return map
 }
 
-export async function getMapKeyById(mapId: string): Promise<number> {
+async function httpGetMapKeyById(mapId: string): Promise<number> {
   const maps = await fetchDataFile<IMapInfo[]>('map.json')
   const map = maps.find((map) => map?.id === mapId)
   if (!map) throw new Error(`Map ${mapId} was not found`)
   return map.rowId
 }
 
-export function getRegion(): Promise<IRegion[]> {
+function httpGetRegion(): Promise<IRegion[]> {
   return fetchDataFile<IRegion[]>('region.json')
 }
 
@@ -67,4 +67,34 @@ export interface IRegion {
     placeName: string
     placeNameSub?: string
   }>
+}
+
+export interface MapDataProvider {
+  getRegion(): Promise<IRegion[]>
+  getMap(rowId: number): Promise<IMapInfo>
+  getMapKeyById(id: string): Promise<number>
+  getMapMarkers(map: IMapInfo): Promise<IMapMarker[]>
+}
+const httpProvider: MapDataProvider = {
+  getRegion: httpGetRegion,
+  getMap: httpGetMap,
+  getMapKeyById: httpGetMapKeyById,
+  getMapMarkers: httpGetMapMarkers,
+}
+let provider: MapDataProvider = httpProvider
+
+export function setDataProvider(value?: MapDataProvider): void {
+  provider = value ?? httpProvider
+}
+export function getRegion(): Promise<IRegion[]> {
+  return provider.getRegion()
+}
+export function getMap(rowId: number): Promise<IMapInfo> {
+  return provider.getMap(rowId)
+}
+export function getMapKeyById(id: string): Promise<number> {
+  return provider.getMapKeyById(id)
+}
+export async function getMapMarkers(map: IMapInfo): Promise<IMapMarker[]> {
+  return [...(await provider.getMapMarkers(map))].reverse()
 }
