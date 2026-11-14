@@ -9,6 +9,7 @@ const output = join(root, 'dist', 'pages')
 await rm(output, { recursive: true, force: true })
 await mkdir(output, { recursive: true })
 await cp(join(root, 'pages', 'index.html'), join(output, 'index.html'))
+await cp(join(root, 'pages', 'edgeone.json'), join(output, 'edgeone.json'))
 
 for (const name of ['kit-common', 'kit-tooltip']) {
   const source = join(root, 'pkgs', name)
@@ -23,10 +24,6 @@ for (const name of ['kit-common', 'kit-tooltip']) {
 const mapRoot = join(output, 'eorzea-map')
 const mapSource = join(root, 'pkgs', 'eorzea-map')
 await mkdir(join(mapRoot, 'assets'), { recursive: true })
-await cp(
-  join(root, 'pages', 'eorzea-map', 'edgeone.json'),
-  join(mapRoot, 'edgeone.json'),
-)
 await cp(
   join(mapSource, 'dist', 'map.umd.cjs'),
   join(mapRoot, 'assets', 'map.umd.js'),

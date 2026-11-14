@@ -162,9 +162,9 @@ setApiUrl("/data/");
 
 上述示例假设 `public/` 是站点静态资源目录。跨域托管数据时，服务器需允许页面的跨域请求。
 
-仓库的 `pnpm build:pages` 会将 EdgeOne 配置复制到 `dist/pages/eorzea-map/edgeone.json`，
-在 `pages` 分支中对应 `eorzea-map/edgeone.json`。仅部署 `eorzea-map/` 目录时，
-该文件与 `index.html` 同处部署根目录，通过 `/*` 为所有资源设置 `Access-Control-Allow-Origin: *`。
+仓库的 `pnpm build:pages` 会将 EdgeOne 配置复制到 `dist/pages/edgeone.json`，
+对应 `pages` 分支根目录的 `edgeone.json`。EdgeOne 设置为根目录 `./`、输出目录 `eorzea-map`，
+配置从项目根目录读取，通过 `/*` 为站点所有资源设置 `Access-Control-Allow-Origin: *`。
 
 ## 升级
 
