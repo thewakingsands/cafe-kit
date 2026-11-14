@@ -24,6 +24,10 @@ const mapRoot = join(output, 'eorzea-map')
 const mapSource = join(root, 'pkgs', 'eorzea-map')
 await mkdir(join(mapRoot, 'assets'), { recursive: true })
 await cp(
+  join(root, 'pages', 'eorzea-map', 'edgeone.json'),
+  join(mapRoot, 'edgeone.json'),
+)
+await cp(
   join(mapSource, 'dist', 'map.umd.cjs'),
   join(mapRoot, 'assets', 'map.umd.js'),
 )
